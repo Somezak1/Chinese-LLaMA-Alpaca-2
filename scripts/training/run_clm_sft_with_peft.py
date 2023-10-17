@@ -53,6 +53,42 @@ from peft.tuners.lora import LoraLayer
 
 from transformers.trainer_utils import PREFIX_CHECKPOINT_DIR
 
+# 该代码的运行参数为
+# torchrun --nnodes 1 --nproc_per_node 1 run_clm_sft_with_peft.py \
+#     --deepspeed ds_zero2_no_offload.json \
+#     --model_name_or_path /data1/csw_model_weights/chinese-llama-2-13b \
+#     --tokenizer_name_or_path /data1/csw_model_weights/chinese-llama-2-13b \
+#     --dataset_dir ../../data \
+#     --per_device_train_batch_size 2 \
+#     --do_train \
+#     --seed 14 \
+#     --fp16 \
+#     --num_train_epochs 2 \
+#     --lr_scheduler_type cosine \
+#     --learning_rate 1e-4 \
+#     --warmup_ratio 0.03 \
+#     --weight_decay 0 \
+#     --logging_strategy steps \
+#     --logging_steps 10 \
+#     --save_strategy steps \
+#     --save_total_limit 3 \
+#     --evaluation_strategy steps \
+#     --eval_steps 250 \
+#     --save_steps 500 \
+#     --gradient_accumulation_steps 1 \
+#     --preprocessing_num_workers 8 \
+#     --max_seq_length 512 \
+#     --output_dir output_dir \
+#     --overwrite_output_dir \
+#     --ddp_timeout 30000 \
+#     --logging_first_step True \
+#     --lora_rank 64 \
+#     --lora_alpha 128 \
+#     --trainable "q_proj,v_proj,k_proj,o_proj,gate_proj,down_proj,up_proj" \
+#     --modules_to_save "embed_tokens,lm_head" \
+#     --lora_dropout 0.05 \
+#     --torch_dtype float16 \
+#     --load_in_kbits
 
 require_version("datasets>=1.8.0", "To fix: pip install -r examples/pytorch/language-modeling/requirements.txt")
 
@@ -419,9 +455,9 @@ def main():
             #     """
 
             path = Path(data_args.dataset_dir)
-            # data_args.dataset_dir: '../data'
+            # data_args.dataset_dir: '../../data'
             files = [os.path.join(path,file.name) for file in path.glob("*.json")]
-            # files: ['../data/alpaca_data_zh_51k.json']
+            # files: ['../../data/alpaca_data_zh_51k.json']
             logger.info(f"Training files: {' '.join(files)}")
             train_dataset = build_instruction_dataset(
                 data_path=files,
@@ -446,10 +482,9 @@ def main():
         logger.info(tokenizer.decode(train_dataset[0]['input_ids']))
 
     if training_args.do_eval:
-        # training_args.do_eval: True
+        # training_args.do_eval: False
         with training_args.main_process_first(desc="loading and tokenization"):
             files = [data_args.validation_file]
-            # ['../alpaca_data.json']
             logger.info(f"Evaluation files: {' '.join(files)}")
             eval_dataset = build_instruction_dataset(
                 data_path=files,
