@@ -724,6 +724,29 @@ def main():
                 #     ['<s>', '▁', '2', '.', '▁', '使用', '水', '箱', '或', '水', '桶', '收集', '家庭', '废', '水', '，',
                 #     '例如', '洗碗', '和', '洗', '浴', '。', '▁', '</s>']
 
+                # 值得注意的是, 对于pt_sample_data.txt中
+                # 第8行  line = '9. 尽可能多地重复使用灰水（来自洗衣机、浴室水槽和淋浴的水）。 \n'
+                # tokenizer.decode(tokenized_dataset['train'][8]["input_ids"]):
+                #     '<s> 9. 尽可能多地重复使用灰水（来自洗衣机、浴室水槽和淋浴的水）。 </s>'
+                # tokenizer.convert_ids_to_tokens(tokenized_dataset['train'][8]["input_ids"]):
+                #     ['<s>', '▁', '9', '.', '▁', '尽可能', '多', '地', '重复', '使用', '灰', '水', '（', '来自',
+                #     '洗衣机', '、', '浴室', '水', '槽', '和', '淋', '浴', '的', '水', '）', '。', '▁', '</s>']
+                # 第40行 line = ' \n'
+                # tokenizer.decode(tokenized_dataset['train'][40]["input_ids"]):
+                #     '<s>  </s>'
+                # tokenizer.convert_ids_to_tokens(tokenized_dataset['train'][40]["input_ids"]):
+                #     ['<s>', '▁▁', '</s>']
+                # 第42行 line = '    players = int(sys.argv[1])\n'
+                # tokenizer.decode(tokenized_dataset['train'][42]["input_ids"]):
+                #     '<s>     players = int(sys.argv[1])</s>'
+                # tokenizer.convert_ids_to_tokens(tokenized_dataset['train'][42]["input_ids"]):
+                #     ['<s>', '▁▁▁▁', '▁players', '▁=', '▁int', '(', 'sys', '.', 'argv', '[', '1', '])', '</s>']
+                # 第44行 line = '\n'
+                # tokenizer.decode(tokenized_dataset['train'][44]["input_ids"]):
+                #     '<s></s>'
+                # tokenizer.convert_ids_to_tokens(tokenized_dataset['train'][44]["input_ids"]):
+                #     ['<s>', '</s>']
+
                 grouped_datasets = tokenized_dataset.map(
                     group_texts,
                     batched=True,
