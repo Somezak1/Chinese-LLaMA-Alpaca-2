@@ -61,6 +61,8 @@ from transformers.trainer_utils import PREFIX_CHECKPOINT_DIR
 #     --dataset_dir ../../data \
 #     --per_device_train_batch_size 2 \
 #     --do_train \
+#     --do_eval \
+#     --validation_file ../../data/alpaca_data_zh_51k.json \
 #     --seed 14 \
 #     --fp16 \
 #     --num_train_epochs 2 \
@@ -847,7 +849,7 @@ def main():
         logger.info(tokenizer.decode(train_dataset[0]['input_ids']))
 
     if training_args.do_eval:
-        # training_args.do_eval: False
+        # training_args.do_eval: True
         with training_args.main_process_first(desc="loading and tokenization"):
             files = [data_args.validation_file]
             logger.info(f"Evaluation files: {' '.join(files)}")
@@ -1038,16 +1040,18 @@ def main():
             checkpoint = last_checkpoint
         train_result = trainer.train(resume_from_checkpoint=checkpoint)
         # class LlamaForCausalLM(LlamaPreTrainedModel):
+        #     _tied_weights_keys = ["lm_head.weight"]
+        #
         #     def __init__(self, config):
         #         super().__init__(config)
         #         self.model = LlamaModel(config)
-        #
+        #         self.vocab_size = config.vocab_size
         #         self.lm_head = nn.Linear(config.hidden_size, config.vocab_size, bias=False)
         #
         #         # Initialize weights and apply final processing
         #         self.post_init()
         #
-        #    ......
+        #     ......
         #
         #     @add_start_docstrings_to_model_forward(LLAMA_INPUTS_DOCSTRING)
         #     @replace_return_docstrings(output_type=CausalLMOutputWithPast, config_class=_CONFIG_FOR_DOC)
@@ -1081,13 +1085,13 @@ def main():
         #         >>> model = LlamaForCausalLM.from_pretrained(PATH_TO_CONVERTED_WEIGHTS)
         #         >>> tokenizer = AutoTokenizer.from_pretrained(PATH_TO_CONVERTED_TOKENIZER)
         #
-        #         >>> prompt = "Hey, are you consciours? Can you talk to me?"
+        #         >>> prompt = "Hey, are you conscious? Can you talk to me?"
         #         >>> inputs = tokenizer(prompt, return_tensors="pt")
         #
         #         >>> # Generate
         #         >>> generate_ids = model.generate(inputs.input_ids, max_length=30)
         #         >>> tokenizer.batch_decode(generate_ids, skip_special_tokens=True, clean_up_tokenization_spaces=False)[0]
-        #         "Hey, are you consciours? Can you talk to me?\nI'm not consciours, but I can talk to you."
+        #         "Hey, are you conscious? Can you talk to me?\nI'm not conscious, but I can talk to you."
         #         ```"""
         #
         #         output_attentions = output_attentions if output_attentions is not None else self.config.output_attentions
@@ -1098,32 +1102,39 @@ def main():
         #
         #         # decoder outputs consists of (dec_features, layer_state, dec_hidden, dec_attn)
         #         outputs = self.model(
-        #             input_ids=input_ids,  # 第一个step的size为(2, 97)
-        #             attention_mask=attention_mask,  # 第一个step的size为(2, 97)
-        #             position_ids=position_ids,  # None
-        #             past_key_values=past_key_values,  # None
-        #             inputs_embeds=inputs_embeds,  # None
-        #             use_cache=use_cache,  # None
-        #             output_attentions=output_attentions,  # False
-        #             output_hidden_states=output_hidden_states,  # False
-        #             return_dict=return_dict,  # True
+        #             input_ids=input_ids,
+        #             attention_mask=attention_mask,
+        #             position_ids=position_ids,
+        #             past_key_values=past_key_values,
+        #             inputs_embeds=inputs_embeds,
+        #             use_cache=use_cache,
+        #             output_attentions=output_attentions,
+        #             output_hidden_states=output_hidden_states,
+        #             return_dict=return_dict,
         #         )
         #
-        #         hidden_states = outputs[0]  # hidden_states.size(): (2, 97, 4096)
-        #         logits = self.lm_head(hidden_states)  # logits.size(): (2, 97, 49954)
+        #         hidden_states = outputs[0]
+        #         if self.config.pretraining_tp > 1:
+        #             lm_head_slices = self.lm_head.weight.split(self.vocab_size // self.config.pretraining_tp, dim=0)
+        #             logits = [F.linear(hidden_states, lm_head_slices[i]) for i in range(self.config.pretraining_tp)]
+        #             logits = torch.cat(logits, dim=-1)
+        #         else:
+        #             logits = self.lm_head(hidden_states)
+        #         logits = logits.float()
         #
         #         loss = None
         #         if labels is not None:
         #             # Shift so that tokens < n predict n
-        #             shift_logits = logits[..., :-1, :].contiguous()  # shift_logits.size(): (2, 96, 49954)
-        #             shift_labels = labels[..., 1:].contiguous()  # shift_labels.size(): (2, 96)
+        #             shift_logits = logits[..., :-1, :].contiguous()
+        #             shift_labels = labels[..., 1:].contiguous()
         #             # Flatten the tokens
         #             loss_fct = CrossEntropyLoss()
-        #             shift_logits = shift_logits.view(-1, self.config.vocab_size)  # shift_logits.size(): (192, 49954)
-        #             shift_labels = shift_labels.view(-1)  # shift_labels.size(): (192, )
+        #             shift_logits = shift_logits.view(-1, self.config.vocab_size)
+        #             shift_labels = shift_labels.view(-1)
         #             # Enable model parallelism
         #             shift_labels = shift_labels.to(shift_logits.device)
-        #             loss = loss_fct(shift_logits, shift_labels)  # labels中-100的地方损失为0
+        #             loss = loss_fct(shift_logits, shift_labels)
+        #             raise ValueError
         #
         #         if not return_dict:
         #             output = (logits,) + outputs[1:]
@@ -1137,25 +1148,54 @@ def main():
         #             attentions=outputs.attentions,
         #         )
 
-
-        # ↓ =======================================================================================================
-        # 此处拿的是Chinese-LLaMA-Alpaca-1项目debug得来的信息, 由于这处debug信息获取相对复杂
-        # 需要在transformers底层源码打断点, 因此直接照搬我在Chinese-LLaMA-Alpaca-1项目中此处注释的信息
-        # 请忽略tokenizer以及对话模板的不同, 重点关注【data_collator的作用】以及【loss矩阵】
-
-        # batch_size=2
-        # 训练的第一个step, 其inputs由2个样本的input_ids, labels, attention_mask组成, 三个元素的形状都为(2, 97)
-        # inputs['attention_mask']:
+        # 以输入模型的第一个batch为例, 观察输入模型样本的组织方式及loss计算方法
+        # input_ids.shape: [2, 135]
+        # input_ids:
+        # tensor([[    1,   518, 25580, 29962,  3532, 14816, 29903,  6778,    13,  3492,
+        #            526,   263,  8444, 20255, 29889, 32732, 32475, 31616, 30909, 31931,
+        #          32764, 40742, 30267,    13, 29966,   829, 14816, 29903,  6778,    13,
+        #             13, 37656, 37407, 32060, 32262, 32949, 32261, 30210, 39078, 30267,
+        #             13, 31751, 32949, 32807, 30743, 33662, 30952, 34101, 30210, 32447,
+        #          33480, 34627, 39132, 30210, 32330, 34020, 31548, 30267,   518, 29914,
+        #          25580, 29962, 29871, 29896, 29889, 42618, 33662, 30952, 34101, 30210,
+        #          32330, 34020, 31548, 30882,    13, 29906, 29889, 29871, 35372, 33662,
+        #          30952, 34101, 30210, 40457, 32875, 32084, 32447, 30882,    13, 29941,
+        #          29889, 29871, 33662, 30952, 34101, 44577, 32306, 31391, 32151, 34020,
+        #          31548, 30882,    13, 29946, 29889, 29871, 33662, 30952, 34101, 47060,
+        #          32400, 33557, 34164, 32261, 30882,    13, 29945, 29889, 29871, 32454,
+        #          30815, 32179, 32796, 32262, 40886, 30780, 33662, 30952, 34101, 30210,
+        #          33796, 31391, 32528, 30882,     2],
+        #         [    1,   518, 25580, 29962,  3532, 14816, 29903,  6778,    13,  3492,
+        #            526,   263,  8444, 20255, 29889, 32732, 32475, 31616, 30909, 31931,
+        #          32764, 40742, 30267,    13, 29966,   829, 14816, 29903,  6778,    13,
+        #             13, 41671, 33335, 32109, 37528, 32231, 30592, 32009, 33637, 30267,
+        #             13, 32455, 31505, 33267,   518, 29914, 25580, 29962, 29871, 32455,
+        #          31505, 33267, 30505, 45837, 33226, 32879, 36861, 30392, 45573, 32258,
+        #          33023, 32156, 32090, 30267, 34981, 32090, 30275, 30214, 32031, 30505,
+        #          33023, 32156, 31407, 38943, 30594, 33000, 30743, 31649, 31391, 41148,
+        #          30214, 32061, 32384, 46270, 33023, 32156, 30267, 36353, 32455, 31505,
+        #          33267, 37528, 30214, 32017, 32142, 32940, 33000, 31649, 31391, 41148,
+        #          30210, 32455, 30594, 30214, 33023, 32156, 34384, 31407, 46270, 30267,
+        #              2, 32000, 32000, 32000, 32000, 32000, 32000, 32000, 32000, 32000,
+        #          32000, 32000, 32000, 32000, 32000, 32000, 32000, 32000, 32000, 32000,
+        #          32000, 32000, 32000, 32000, 32000]], device='cuda:0')
+        #
+        # attention_mask.shape: [2, 135]
+        # attention_mask:
         # tensor([[ True,  True,  True,  True,  True,  True,  True,  True,  True,  True,
         #           True,  True,  True,  True,  True,  True,  True,  True,  True,  True,
         #           True,  True,  True,  True,  True,  True,  True,  True,  True,  True,
         #           True,  True,  True,  True,  True,  True,  True,  True,  True,  True,
         #           True,  True,  True,  True,  True,  True,  True,  True,  True,  True,
         #           True,  True,  True,  True,  True,  True,  True,  True,  True,  True,
-        #           True,  True,  True,  True,  True, False, False, False, False, False,
-        #          False, False, False, False, False, False, False, False, False, False,
-        #          False, False, False, False, False, False, False, False, False, False,
-        #          False, False, False, False, False, False, False],
+        #           True,  True,  True,  True,  True,  True,  True,  True,  True,  True,
+        #           True,  True,  True,  True,  True,  True,  True,  True,  True,  True,
+        #           True,  True,  True,  True,  True,  True,  True,  True,  True,  True,
+        #           True,  True,  True,  True,  True,  True,  True,  True,  True,  True,
+        #           True,  True,  True,  True,  True,  True,  True,  True,  True,  True,
+        #           True,  True,  True,  True,  True,  True,  True,  True,  True,  True,
+        #           True,  True,  True,  True,  True,  True,  True,  True,  True,  True,
+        #           True,  True,  True,  True,  True],
         #         [ True,  True,  True,  True,  True,  True,  True,  True,  True,  True,
         #           True,  True,  True,  True,  True,  True,  True,  True,  True,  True,
         #           True,  True,  True,  True,  True,  True,  True,  True,  True,  True,
@@ -1165,99 +1205,102 @@ def main():
         #           True,  True,  True,  True,  True,  True,  True,  True,  True,  True,
         #           True,  True,  True,  True,  True,  True,  True,  True,  True,  True,
         #           True,  True,  True,  True,  True,  True,  True,  True,  True,  True,
-        #           True,  True,  True,  True,  True,  True,  True]])
-        # inputs['labels']:
+        #           True,  True,  True,  True,  True,  True,  True,  True,  True,  True,
+        #           True,  True,  True,  True,  True,  True,  True,  True,  True,  True,
+        #           True, False, False, False, False, False, False, False, False, False,
+        #          False, False, False, False, False, False, False, False, False, False,
+        #          False, False, False, False, False]], device='cuda:0')
+        #
+        # position_ids: None
+        # past_key_values: None
+        # inputs_embeds: None
+        # use_cache: None
+        # output_attentions: False
+        # output_hidden_states: False
+        # return_dict: True
+        #
+        # hidden_states.shape: [2, 135, 5120]
+        # logits.shape: [2, 135, 55296], 注意55296是词表大小
+        # labels.shape: [2, 135]
+        # labels:
         # tensor([[ -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,
         #           -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,
         #           -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,
         #           -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,
         #           -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,
-        #           -100,  -100,  -100,  -100, 29871, 40722, 31305, 30210, 32719, 30573,
-        #          32029, 42062, 34201, 30267,     2,  -100,  -100,  -100,  -100,  -100,
         #           -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,
-        #           -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,
-        #           -100,  -100,  -100,  -100,  -100,  -100,  -100],
+        #           -100,  -100, 29871, 29896, 29889, 42618, 33662, 30952, 34101, 30210,
+        #          32330, 34020, 31548, 30882,    13, 29906, 29889, 29871, 35372, 33662,
+        #          30952, 34101, 30210, 40457, 32875, 32084, 32447, 30882,    13, 29941,
+        #          29889, 29871, 33662, 30952, 34101, 44577, 32306, 31391, 32151, 34020,
+        #          31548, 30882,    13, 29946, 29889, 29871, 33662, 30952, 34101, 47060,
+        #          32400, 33557, 34164, 32261, 30882,    13, 29945, 29889, 29871, 32454,
+        #          30815, 32179, 32796, 32262, 40886, 30780, 33662, 30952, 34101, 30210,
+        #          33796, 31391, 32528, 30882,     2],
         #         [ -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,
         #           -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,
         #           -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,
         #           -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,
-        #           -100,  -100,  -100,  -100,  -100, 29871, 30392, 30210, 30214, 29954,
-        #           7982, 35894, 35587, 37145, 36977, 34886, 38547, 34886, 36977, 32204,
-        #          37559, 30267, 32269, 32039, 44049, 36977, 32326, 30893, 32019, 32968,
-        #          30210, 38547, 32333, 30210, 30267, 32070, 38547, 30785, 29954,  7982,
-        #          35894, 35587, 32244, 34886, 36977, 32204, 36444, 33690, 30214, 30847,
-        #          33155, 30214, 32772, 31391, 32417, 30267,     2]])
-        # inputs['input_ids']:
-        # tensor([[    1, 13866,   338,   385, 15278,   393, 16612,   263,  3414, 29889,
-        #          14350,   263,  2933,   393,  7128,  2486,  1614,  2167,   278,  2009,
-        #          29889,    13,    13,  2277, 29937,  2799,  4080, 29901,    13, 33347,
-        #          31999, 30495, 37121, 30503, 43423, 30210, 40722, 31305, 30210, 32719,
-        #          30267,    13, 29941, 34201, 30503, 29946, 34201,    13,    13,  2277,
-        #          29937, 13291, 29901, 29871, 29871, 40722, 31305, 30210, 32719, 30573,
-        #          32029, 42062, 34201, 30267,     2, 49953, 49953, 49953, 49953, 49953,
-        #          49953, 49953, 49953, 49953, 49953, 49953, 49953, 49953, 49953, 49953,
-        #          49953, 49953, 49953, 49953, 49953, 49953, 49953, 49953, 49953, 49953,
-        #          49953, 49953, 49953, 49953, 49953, 49953, 49953],
-        #         [    1, 13866,   338,   385, 15278,   393, 16612,   263,  3414, 29889,
-        #          14350,   263,  2933,   393,  7128,  2486,  1614,  2167,   278,  2009,
-        #          29889,    13,    13,  2277, 29937,  2799,  4080, 29901,    13, 29954,
-        #           7982, 35894, 35587, 30815, 34886, 37559, 32027, 30882,    13,    13,
-        #           2277, 29937, 13291, 29901, 29871, 29871, 30392, 30210, 30214, 29954,
-        #           7982, 35894, 35587, 37145, 36977, 34886, 38547, 34886, 36977, 32204,
-        #          37559, 30267, 32269, 32039, 44049, 36977, 32326, 30893, 32019, 32968,
-        #          30210, 38547, 32333, 30210, 30267, 32070, 38547, 30785, 29954,  7982,
-        #          35894, 35587, 32244, 34886, 36977, 32204, 36444, 33690, 30214, 30847,
-        #          33155, 30214, 32772, 31391, 32417, 30267,     2]])
-
-        # tokenizer.decode(inputs['input_ids'][0]):
-        # '<s> Below is an instruction that describes a task. Write a response that appropriately completes the
-        # request.\n\n### Instruction:\n计算给定长度和宽度的矩形的面积。\n3厘米和4厘米\n\n### Response:  矩形的面积为12平
-        # 方厘米。</s> [PAD] [PAD] [PAD] [PAD] [PAD] [PAD] [PAD] [PAD] [PAD] [PAD] [PAD] [PAD] [PAD] [PAD] [PAD]
-        # [PAD] [PAD] [PAD] [PAD] [PAD] [PAD] [PAD] [PAD] [PAD] [PAD] [PAD] [PAD] [PAD] [PAD] [PAD] [PAD] [PAD]'
-
-        # tokenizer.decode(inputs['input_ids'][1]):
-        # '<s> Below is an instruction that describes a task. Write a response that appropriately completes the
-        # request.\n\n### Instruction:\nGPT-3模型能识别物体吗？\n\n### Response:  是的，GPT-3模型可以通过图像识别算法识
-        # 别图像中的物体。这是通过标记图像数据集进行训练的算法实现的。这些算法使GPT-3模型能够识别图像中的特定对象，如猫，狗或汽车。</s>'
-
-        # 训练的第二个step, 其inputs由2个样本的input_ids, labels, attention_mask组成, 三个元素的形状都为(2, 84)
-        # 可以看出, 由于collator的存在, 每个batch中的样本总是按当前batch中最长的那个样本长度来padding
-
-        # 上面如果CrossEntropyLoss()定义时reduce=False, 则对第一个step数据计算得到的loss.view(2, 97)得到如下损失矩阵
-        # tensor([[0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00,
-        #          0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00,
-        #          0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00,
-        #          0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00,
-        #          0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00,
-        #          0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00,
-        #          0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00,
-        #          0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00,
-        #          0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00, 3.4434e+00,
-        #          2.9238e+00, 1.2901e-02, 7.6855e-01, 2.3486e-01, 1.7949e+00, 5.7812e+00,
-        #          1.2822e+00, 6.5613e-02, 8.8770e-01, 1.2094e+01, 0.0000e+00, 0.0000e+00,
-        #          0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00,
-        #          0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00,
-        #          0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00,
-        #          0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00,
-        #          0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00],
-        #         [0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00,
-        #          0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00,
-        #          0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00,
-        #          0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00,
-        #          0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00,
-        #          0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00,
-        #          0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00,
-        #          0.0000e+00, 0.0000e+00, 5.5703e+00, 2.8789e+00, 1.1992e+00, 1.5488e+00,
-        #          1.6680e+00, 2.5406e-02, 3.9948e-02, 1.5654e+00, 6.5898e+00, 2.4414e+00,
-        #          4.7021e-01, 7.8086e+00, 9.1992e-01, 3.9629e+00, 6.0010e-01, 3.5547e-01,
-        #          2.3682e-01, 6.0547e+00, 3.7734e+00, 7.0859e+00, 2.0684e+00, 6.3672e+00,
-        #          3.8477e+00, 3.8633e+00, 1.3262e+00, 2.0488e+00, 3.6816e+00, 5.0781e+00,
-        #          4.4531e-01, 1.9812e-01, 5.6523e+00, 2.4805e+00, 6.2734e+00, 1.6045e+00,
-        #          2.5620e-02, 3.6041e-02, 1.4746e+00, 1.2236e+00, 1.7871e+00, 1.5029e+00,
-        #          2.1509e-01, 3.8438e+00, 2.4141e+00, 1.2256e+00, 2.1367e+00, 3.5195e+00,
-        #          1.9746e+00, 8.9893e-01, 3.6602e+00, 2.0605e+00, 4.4189e-01, 1.3930e+01]],
-        #        device='cuda:0', dtype=torch.float16, grad_fn= < ViewBackward0 >)
-        # ↑ =======================================================================================================
+        #           -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100, 29871, 32455,
+        #          31505, 33267, 30505, 45837, 33226, 32879, 36861, 30392, 45573, 32258,
+        #          33023, 32156, 32090, 30267, 34981, 32090, 30275, 30214, 32031, 30505,
+        #          33023, 32156, 31407, 38943, 30594, 33000, 30743, 31649, 31391, 41148,
+        #          30214, 32061, 32384, 46270, 33023, 32156, 30267, 36353, 32455, 31505,
+        #          33267, 37528, 30214, 32017, 32142, 32940, 33000, 31649, 31391, 41148,
+        #          30210, 32455, 30594, 30214, 33023, 32156, 34384, 31407, 46270, 30267,
+        #              2,  -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,
+        #           -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,
+        #           -100,  -100,  -100,  -100,  -100]], device='cuda:0')
+        #
+        # loss = CrossEntropyLoss()(logits[..., :-1, :].view(-1, 55296), labels[..., 1:].view(-1))
+        # loss.shape: [268]
+        # loss:
+        # tensor([0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00,
+        #         0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00,
+        #         0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00,
+        #         0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00,
+        #         0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00,
+        #         0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00,
+        #         0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00,
+        #         0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00,
+        #         0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00,
+        #         0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00,
+        #         0.0000e+00, 9.5892e-01, 2.7711e+00, 4.6718e-01, 4.0682e+00, 2.8885e-01,
+        #         2.1138e-02, 1.0128e-01, 5.2179e+00, 2.0874e+00, 9.8119e-02, 3.6435e-03,
+        #         1.1197e-01, 1.8104e+01, 1.6244e-01, 7.7388e-03, 6.0321e-01, 7.8061e+00,
+        #         3.0438e+00, 3.9255e-02, 4.1152e-02, 7.9409e-01, 3.4647e+00, 5.4830e-02,
+        #         2.0371e+00, 4.1411e+00, 4.5448e-02, 1.7236e+01, 9.2835e-03, 2.9990e-03,
+        #         3.7191e-01, 1.2440e+00, 2.9448e-02, 2.9886e-02, 7.8816e+00, 9.9238e+00,
+        #         3.5825e+00, 1.2797e+00, 2.6501e+00, 9.3011e-04, 3.5373e-02, 1.5068e+01,
+        #         1.0693e-02, 1.9498e-03, 3.5507e-01, 1.0780e+00, 2.8248e-02, 5.5362e-02,
+        #         7.3778e+00, 2.3909e+00, 5.4721e+00, 3.0809e+00, 2.9763e+00, 2.6406e-02,
+        #         1.6001e+01, 1.1255e-02, 2.0288e-03, 2.7162e-01, 4.2510e+00, 4.7529e+00,
+        #         1.9535e+00, 2.4820e+00, 1.1472e+00, 9.6600e+00, 8.1138e-02, 1.6678e-01,
+        #         3.7056e-02, 3.9047e-02, 4.0253e-01, 5.3785e+00, 2.7608e+00, 4.1660e+00,
+        #         2.3823e-01, 2.1440e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00,
+        #         0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00,
+        #         0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00,
+        #         0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00,
+        #         0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00,
+        #         0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00,
+        #         0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00,
+        #         0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00,
+        #         0.0000e+00, 1.0687e+00, 2.6204e+00, 3.1673e-01, 3.1881e-03, 4.2877e+00,
+        #         6.6413e+00, 5.3095e+00, 5.6561e+00, 4.7591e-01, 1.0123e+00, 1.0539e+01,
+        #         3.0015e+00, 4.7216e+00, 1.7298e-01, 1.7987e+00, 2.3185e-01, 6.0236e+00,
+        #         8.8823e-01, 2.0735e-01, 1.8488e-01, 3.2653e+00, 3.5877e+00, 3.8219e+00,
+        #         1.1851e-01, 3.9474e+00, 2.6956e+00, 1.5285e+00, 5.3813e+00, 1.6141e+00,
+        #         1.8201e+00, 3.8696e+00, 1.8933e+00, 6.6105e-02, 1.4400e+00, 3.7698e+00,
+        #         1.2937e+00, 1.4470e-01, 1.1642e-02, 5.5292e-01, 5.2854e+00, 1.1605e+00,
+        #         4.1926e-01, 7.4523e-03, 4.2066e+00, 1.9259e+00, 1.6983e+00, 2.9249e+00,
+        #         4.5602e+00, 7.5010e+00, 3.3285e-01, 3.1266e-01, 3.5582e-01, 9.3001e-01,
+        #         1.2459e-01, 1.4658e+00, 8.7854e-01, 1.5105e-01, 3.3182e-03, 2.1126e-01,
+        #         4.8465e-01, 8.4453e-01, 4.5693e-02, 3.4207e+00, 0.0000e+00, 0.0000e+00,
+        #         0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00,
+        #         0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00,
+        #         0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00,
+        #         0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00], device='cuda:0',
+        #        grad_fn=<NllLossBackward0>)
 
         metrics = train_result.metrics
 
