@@ -1149,6 +1149,8 @@ def main():
         #         )
 
         # 以输入模型的第一个batch为例, 观察输入模型样本的组织方式及loss计算方法
+        # =======================================================================================================
+        # 调用 self.model(...) 前馈时的参数值:
         # input_ids.shape: [2, 135]
         # input_ids:
         # tensor([[    1,   518, 25580, 29962,  3532, 14816, 29903,  6778,    13,  3492,
@@ -1211,16 +1213,6 @@ def main():
         #          False, False, False, False, False, False, False, False, False, False,
         #          False, False, False, False, False]], device='cuda:0')
         #
-        # position_ids: None
-        # past_key_values: None
-        # inputs_embeds: None
-        # use_cache: None
-        # output_attentions: False
-        # output_hidden_states: False
-        # return_dict: True
-        #
-        # hidden_states.shape: [2, 135, 5120]
-        # logits.shape: [2, 135, 55296], 注意55296是词表大小
         # labels.shape: [2, 135]
         # labels:
         # tensor([[ -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,
@@ -1252,6 +1244,21 @@ def main():
         #           -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,  -100,
         #           -100,  -100,  -100,  -100,  -100]], device='cuda:0')
         #
+        # position_ids: None
+        # past_key_values: None
+        # inputs_embeds: None
+        # use_cache: None
+        # output_attentions: None(刚进入时) -> False(经过config赋值后)
+        # output_hidden_states: None(刚进入时) -> False(经过config赋值后)
+        # return_dict: None(刚进入时) -> True(经过config赋值后)
+
+        # self.model(...) 调用后的各变量值:
+        # len(outputs): 1
+        # type(outputs): <class 'transformers.modeling_outputs.BaseModelOutputWithPast'>
+        # hidden_states.shape: [2, 135, 5120]
+        # logits.shape: [2, 135, 55296], 注意55296是词表大小
+        # labels.shape: [2, 135]
+
         # loss = CrossEntropyLoss()(logits[..., :-1, :].view(-1, 55296), labels[..., 1:].view(-1))
         # loss.shape: [268]
         # loss:
@@ -1301,6 +1308,7 @@ def main():
         #         0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00,
         #         0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00], device='cuda:0',
         #        grad_fn=<NllLossBackward0>)
+        # =======================================================================================================
 
         metrics = train_result.metrics
 

@@ -1260,6 +1260,8 @@ def main():
         #         )
 
         # 以输入模型的第一个batch为例, 观察输入模型样本的组织方式及loss计算方法
+        # =======================================================================================================
+        # 调用 self.model(...) 前馈时的参数值:
         # input_ids.shape: [2, 512]
         # input_ids:
         # tensor([[30214, 33684, 34815, 32310, 33480, 30505, 44071, 30210, 35603, 33666,
@@ -1370,19 +1372,23 @@ def main():
         # attention_mask.shape: [2, 512]
         # attention_mask: 是一个全1张量
         #
+        # labels: 和input_ids一模一样
+        #
         # position_ids: None
         # past_key_values: None
         # inputs_embeds: None
         # use_cache: None
-        # output_attentions: False
-        # output_hidden_states: False
-        # return_dict: True
-        #
+        # output_attentions: None(刚进入时) -> False(经过config赋值后)
+        # output_hidden_states: None(刚进入时) -> False(经过config赋值后)
+        # return_dict: None(刚进入时) -> True(经过config赋值后)
+
+        # self.model(...) 调用后的各变量值:
+        # len(outputs): 1
+        # type(outputs): <class 'transformers.modeling_outputs.BaseModelOutputWithPast'>
         # hidden_states.shape: [2, 512, 5120]
         # logits.shape: [2, 512, 55296], 注意55296是词表大小
         # labels.shape: [2, 512]
-        # labels: 和input_ids一模一样
-        #
+
         # loss = CrossEntropyLoss()(logits[..., :-1, :].view(-1, 55296), labels[..., 1:].view(-1))
         # loss.shape: [1022]
         # loss:
@@ -1557,6 +1563,7 @@ def main():
         #         1.2226e+01, 1.1038e+01, 1.2262e+01, 3.1071e+00, 1.3052e+01, 1.0622e+01,
         #         1.3195e+01, 9.9100e+00, 7.3380e+00, 1.1379e+01, 9.7054e+00, 1.1018e+01,
         #         1.2851e+01, 3.1616e+00], device='cuda:0', grad_fn=<NllLossBackward0>)
+        # =======================================================================================================
 
         metrics = train_result.metrics
 
