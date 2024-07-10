@@ -24,8 +24,8 @@
 
 #### 已开源的模型
 
-- 基座模型：Chinese-LLaMA-2-7B, Chinese-LLaMA-2-13B
-- 聊天模型：Chinese-Alpaca-2-7B, Chinese-Alpaca-2-13B
+- 基座模型：Chinese-LLaMA-2-1.3B, Chinese-LLaMA-2-7B, Chinese-LLaMA-2-13B
+- 聊天模型：Chinese-Alpaca-2-1.3B, Chinese-Alpaca-2-7B, Chinese-Alpaca-2-13B
 - 长上下文模型：Chinese-LLaMA-2-7B-16K, Chinese-LLaMA-2-13B-16K, Chinese-Alpaca-2-7B-16K, Chinese-Alpaca-2-13B-16K
 
 ![](./pics/screencast.gif)
@@ -101,9 +101,9 @@
 | 对比项                | 中文LLaMA-2                                            | 中文Alpaca-2                                                 |
 | :-------------------- | :----------------------------------------------------: | :----------------------------------------------------------: |
 | 模型类型 | **基座模型** | **指令/Chat模型（类ChatGPT）** |
-| 已开源大小 | 7B、13B | 7B、13B |
+| 已开源大小 | 1.3B、7B、13B | 1.3B、7B、13B |
 | 训练类型     | Causal-LM (CLM)           | 指令精调                                                     |
-| 训练方式 | LoRA + 全量emb/lm-head | LoRA + 全量emb/lm-head |
+| 训练方式 | 7B、13B：LoRA + 全量emb/lm-head<br/>1.3B：全量 | 7B、13B：LoRA + 全量emb/lm-head<br/>1.3B：全量 |
 | 基于什么模型训练 | [原版Llama-2](https://github.com/facebookresearch/llama)（非chat版） | 中文LLaMA-2 |
 | 训练语料 | 无标注通用语料（120G纯文本） | 有标注指令数据（500万条） |
 | 词表大小<sup>[1]</sup> | 55,296 | 55,296 |
@@ -116,29 +116,34 @@
 > [1] *本项目一代模型和二代模型的词表不同，请勿混用。二代LLaMA和Alpaca的词表相同。*</br>
 > [2] *括号内表示基于NTK上下文扩展支持的最大长度。*</br>
 > [3] *Alpaca-2采用了Llama-2-chat系列模板（格式相同，提示语不同），而不是一代Alpaca的模板，请勿混用。*</br>
+> [4] *不建议单独使用1.3B模型，而是通过投机采样搭配更大的模型（7B、13B）使用。*</br>
 
 ### 完整模型下载
 
 以下是完整版模型，直接下载即可使用，无需其他合并步骤。推荐网络带宽充足的用户。
 
-| 模型名称                  |   类型   | 大小 |                    下载地址                    |
-| :------------------------ | :------: | :----------------------------------------------------------: | :----------------------------------------------------------: |
-| Chinese-LLaMA-2-13B | 基座模型 | 24.7 GB | [[百度]](https://pan.baidu.com/s/1T3RqEUSmyg6ZuBwMhwSmoQ?pwd=e9qy) [[Google]](https://drive.google.com/drive/folders/1YNa5qJ0x59OEOI7tNODxea-1YvMPoH05?usp=share_link) [[🤗HF]](https://huggingface.co/ziqingyang/chinese-llama-2-13b) |
-| Chinese-LLaMA-2-7B | 基座模型 | 12.9 GB | [[百度]](https://pan.baidu.com/s/1E5NI3nlQpx1j8z3eIzbIlg?pwd=n8k3) [[Google]](https://drive.google.com/drive/folders/18pp4I-mvQxRA7b8vF9gP-2cH_ocnXVKh?usp=share_link) [[🤗HF]](https://huggingface.co/ziqingyang/chinese-llama-2-7b) |
-| Chinese-Alpaca-2-13B | 指令模型 | 24.7 GB | [[百度]](https://pan.baidu.com/s/1MT_Zlap1OtdYMgoBNTS3dg?pwd=9xja) [[Google]](https://drive.google.com/drive/folders/1MTsKlzR61xmbTR4hBWzQas_MOpUZsogN?usp=share_link) [[🤗HF]](https://huggingface.co/ziqingyang/chinese-alpaca-2-13b) |
-| Chinese-Alpaca-2-7B | 指令模型 | 12.9 GB | [[百度]](https://pan.baidu.com/s/1wxx-CdgbMupXVRBcaN4Slw?pwd=kpn9) [[Google]](https://drive.google.com/drive/folders/1JsJDVs7tE2y31PBNleBlDPsB7S0ZrY8d?usp=share_link) [[🤗HF]](https://huggingface.co/ziqingyang/chinese-alpaca-2-7b) |
+| 模型名称                  |   类型   | 大小 |                    下载地址                    |                    GGUF                    |
+| :------------------------ | :------: | :----------------------------------------------------------: | :----------------------------------------------------------: | :----------------------------------------------------------: |
+| Chinese-LLaMA-2-13B | 基座模型 | 24.7 GB | [[百度]](https://pan.baidu.com/s/1T3RqEUSmyg6ZuBwMhwSmoQ?pwd=e9qy) [[Google]](https://drive.google.com/drive/folders/1YNa5qJ0x59OEOI7tNODxea-1YvMPoH05?usp=share_link) [[🤗HF]](https://huggingface.co/hfl/chinese-llama-2-13b) | [[🤗HF]](https://huggingface.co/hfl/chinese-llama-2-13b-gguf) |
+| Chinese-LLaMA-2-7B | 基座模型 | 12.9 GB | [[百度]](https://pan.baidu.com/s/1E5NI3nlQpx1j8z3eIzbIlg?pwd=n8k3) [[Google]](https://drive.google.com/drive/folders/18pp4I-mvQxRA7b8vF9gP-2cH_ocnXVKh?usp=share_link) [[🤗HF]](https://huggingface.co/hfl/chinese-llama-2-7b) | [[🤗HF]](https://huggingface.co/hfl/chinese-llama-2-7b-gguf) |
+| Chinese-LLaMA-2-1.3B | 基座模型 | 2.4 GB | [[百度]](https://pan.baidu.com/s/1hEuOCllnJJ5NMEZJf8OkRw?pwd=nwjg) [[Google]](https://drive.google.com/drive/folders/1Sd3PA_gs6JctXtBg5HwmHXh9GX93riMP?usp=share_link) [[🤗HF]](https://huggingface.co/hfl/chinese-llama-2-1.3b) | [[🤗HF]](https://huggingface.co/hfl/chinese-llama-2-1.3b-gguf) |
+| Chinese-Alpaca-2-13B | 指令模型 | 24.7 GB | [[百度]](https://pan.baidu.com/s/1MT_Zlap1OtdYMgoBNTS3dg?pwd=9xja) [[Google]](https://drive.google.com/drive/folders/1MTsKlzR61xmbTR4hBWzQas_MOpUZsogN?usp=share_link) [[🤗HF]](https://huggingface.co/hfl/chinese-alpaca-2-13b) | [[🤗HF]](https://huggingface.co/hfl/chinese-alpaca-2-13b-gguf) |
+| Chinese-Alpaca-2-7B | 指令模型 | 12.9 GB | [[百度]](https://pan.baidu.com/s/1wxx-CdgbMupXVRBcaN4Slw?pwd=kpn9) [[Google]](https://drive.google.com/drive/folders/1JsJDVs7tE2y31PBNleBlDPsB7S0ZrY8d?usp=share_link) [[🤗HF]](https://huggingface.co/hfl/chinese-alpaca-2-7b) | [[🤗HF]](https://huggingface.co/hfl/chinese-alpaca-2-7b-gguf) |
+| Chinese-Alpaca-2-1.3B | 指令模型 | 2.4 GB | [[百度]](https://pan.baidu.com/s/1PD7Ng-ltOIdUGHNorveptA?pwd=ar1p) [[Google]](https://drive.google.com/drive/folders/1h6qOy-Unvqs1_CJ8uPp0eKC61Gbbn8n7?usp=share_link)[[🤗HF]](https://huggingface.co/hfl/chinese-alpaca-2-1.3b) | [[🤗HF]](https://huggingface.co/hfl/chinese-alpaca-2-1.3b-gguf) |
 
 以下是长上下文版模型，**推荐以长文本为主的下游任务使用**，否则建议使用上述标准版。
 
-| 模型名称                   |   类型   |  大小   |                           下载地址                           |
-| :------------------------- | :------: | :-----: | :----------------------------------------------------------: |
-| Chinese-LLaMA-2-13B-16K    | 基座模型 | 24.7 GB | [[百度]](https://pan.baidu.com/s/1XWrh3Ru9x4UI4-XmocVT2w?pwd=f7ik) [[Google]](https://drive.google.com/drive/folders/1nii6lF0DgB1u81CnsE4cCK2jD5oq_OW-?usp=share_link) [[🤗HF]](https://huggingface.co/ziqingyang/chinese-llama-2-13b-16k) |
-| Chinese-LLaMA-2-7B-16K     | 基座模型 | 12.9 GB | [[百度]](https://pan.baidu.com/s/1ZH7T7KU_up61ugarSIXw2g?pwd=pquq) [[Google]](https://drive.google.com/drive/folders/1Zc6jI5bl3myQbQsY79dWJJ8mP_fyf3iF?usp=share_link) [[🤗HF]](https://huggingface.co/ziqingyang/chinese-llama-2-7b-16k) |
-| Chinese-Alpaca-2-13B-16K 🆕 | 指令模型 | 24.7 GB | [[百度]](https://pan.baidu.com/s/1gIzRM1eg-Xx1xV-3nXW27A?pwd=qi7c) [[Google]](https://drive.google.com/drive/folders/1mOkYQCvEqtGoZ9DaIpYFweSkSia2Q0vl?usp=share_link) [[🤗HF]](https://huggingface.co/ziqingyang/chinese-alpaca-2-13b-16k) |
-| Chinese-Alpaca-2-7B-16K 🆕  | 指令模型 | 12.9 GB | [[百度]](https://pan.baidu.com/s/1Qk3U1LyvMb1RSr5AbiatPw?pwd=bfis) [[Google]](https://drive.google.com/drive/folders/1KBRSd2xAhiVQmamfA5wpm5ovYFRKuMdr?usp=share_link) [[🤗HF]](https://huggingface.co/ziqingyang/chinese-alpaca-2-7b-16k) |
+| 模型名称                   |   类型   |  大小   |                           下载地址                           |                             GGUF                             |
+| :------------------------- | :------: | :-----: | :----------------------------------------------------------: | :----------------------------------------------------------: |
+| Chinese-LLaMA-2-13B-16K    | 基座模型 | 24.7 GB | [[百度]](https://pan.baidu.com/s/1XWrh3Ru9x4UI4-XmocVT2w?pwd=f7ik) [[Google]](https://drive.google.com/drive/folders/1nii6lF0DgB1u81CnsE4cCK2jD5oq_OW-?usp=share_link) [[🤗HF]](https://huggingface.co/hfl/chinese-llama-2-13b-16k) | [[🤗HF]](https://huggingface.co/hfl/chinese-llama-2-13b-16k-gguf) |
+| Chinese-LLaMA-2-7B-16K     | 基座模型 | 12.9 GB | [[百度]](https://pan.baidu.com/s/1ZH7T7KU_up61ugarSIXw2g?pwd=pquq) [[Google]](https://drive.google.com/drive/folders/1Zc6jI5bl3myQbQsY79dWJJ8mP_fyf3iF?usp=share_link) [[🤗HF]](https://huggingface.co/hfl/chinese-llama-2-7b-16k) | [[🤗HF]](https://huggingface.co/hfl/chinese-llama-2-7b-16k-gguf) |
+| Chinese-Alpaca-2-13B-16K 🆕 | 指令模型 | 24.7 GB | [[百度]](https://pan.baidu.com/s/1gIzRM1eg-Xx1xV-3nXW27A?pwd=qi7c) [[Google]](https://drive.google.com/drive/folders/1mOkYQCvEqtGoZ9DaIpYFweSkSia2Q0vl?usp=share_link) [[🤗HF]](https://huggingface.co/hfl/chinese-alpaca-2-13b-16k) | [[🤗HF]](https://huggingface.co/hfl/chinese-alpaca-2-13b-16k-gguf) |
+| Chinese-Alpaca-2-7B-16K 🆕  | 指令模型 | 12.9 GB | [[百度]](https://pan.baidu.com/s/1Qk3U1LyvMb1RSr5AbiatPw?pwd=bfis) [[Google]](https://drive.google.com/drive/folders/1KBRSd2xAhiVQmamfA5wpm5ovYFRKuMdr?usp=share_link) [[🤗HF]](https://huggingface.co/hfl/chinese-alpaca-2-7b-16k) | [[🤗HF]](https://huggingface.co/hfl/chinese-alpaca-2-7b-16k-gguf) |
 
 > [!IMPORTANT] 
-> 使用长上下文模型推理时，必须按照文档要求进行设置，具体请参考各推理部署工具的[Wiki](https://github.com/ymcui/Chinese-LLaMA-Alpaca-2/wiki)。
+>
+> 1. 使用长上下文模型推理时，必须按照文档要求进行设置，具体请参考各推理部署工具的[Wiki](https://github.com/ymcui/Chinese-LLaMA-Alpaca-2/wiki)
+> 2. GGUF版指的是llama.cpp中的模型格式，具体请参考llama.cpp的[Wiki](https://github.com/ymcui/Chinese-LLaMA-Alpaca-2/wiki/llamacpp_zh)
 
 ### LoRA模型下载
 
@@ -146,19 +151,19 @@
 
 | 模型名称                  |   类型   |                   合并所需基模型                   | 大小 |                    LoRA下载地址                    |
 | :------------------------ | :------: | :--------------------------------------------------------: | :----------------: | :----------------------------------------------------------: |
-| Chinese-LLaMA-2-LoRA-13B | 基座模型 | [Llama-2-13B-hf](https://huggingface.co/meta-llama/Llama-2-13b-hf) | 1.5 GB | [[百度]](https://pan.baidu.com/s/1PFKTBn54GjAjzWeQISKruw?pwd=we6s) [[Google]](https://drive.google.com/file/d/10Z_k9A9N9D_6RHrMTmbHQRCuI6s1iMb1/view?usp=share_link) [[🤗HF]](https://huggingface.co/ziqingyang/chinese-llama-2-lora-13b) |
-| Chinese-LLaMA-2-LoRA-7B | 基座模型 |        [Llama-2-7B-hf](https://huggingface.co/meta-llama/Llama-2-7b-hf)        | 1.1 GB | [[百度]](https://pan.baidu.com/s/1bmgqdyRh9E3a2uqOGyNqiQ?pwd=7kvq) [[Google]](https://drive.google.com/file/d/1njJGSU_PRbzjYRNw5RSbC5-4fBOXTVY3/view?usp=share_link) [[🤗HF]](https://huggingface.co/ziqingyang/chinese-llama-2-lora-7b) |
-| Chinese-Alpaca-2-LoRA-13B | 指令模型 | [Llama-2-13B-hf](https://huggingface.co/meta-llama/Llama-2-13b-hf) | 1.5 GB | [[百度]](https://pan.baidu.com/s/1Y5giIXOUUzI4Na6JOcviVA?pwd=tc2j) [[Google]](https://drive.google.com/file/d/1z2FIInsYJBTXipgztc-Mv7kkeqscx442/view?usp=share_link) [[🤗HF]](https://huggingface.co/ziqingyang/chinese-alpaca-2-lora-13b) |
-| Chinese-Alpaca-2-LoRA-7B | 指令模型 | [Llama-2-7B-hf](https://huggingface.co/meta-llama/Llama-2-7b-hf) | 1.1 GB | [[百度]](https://pan.baidu.com/s/1g0olPxkB_rlZ9UUVfOnbcw?pwd=5e7w) [[Google]](https://drive.google.com/file/d/1MzJL-ZIzdJW7MIcAiYIDIDJ5dlMi8Kkk/view?usp=share_link) [[🤗HF]](https://huggingface.co/ziqingyang/chinese-alpaca-2-lora-7b) |
+| Chinese-LLaMA-2-LoRA-13B | 基座模型 | [Llama-2-13B-hf](https://huggingface.co/meta-llama/Llama-2-13b-hf) | 1.5 GB | [[百度]](https://pan.baidu.com/s/1PFKTBn54GjAjzWeQISKruw?pwd=we6s) [[Google]](https://drive.google.com/file/d/10Z_k9A9N9D_6RHrMTmbHQRCuI6s1iMb1/view?usp=share_link) [[🤗HF]](https://huggingface.co/hfl/chinese-llama-2-lora-13b) |
+| Chinese-LLaMA-2-LoRA-7B | 基座模型 |        [Llama-2-7B-hf](https://huggingface.co/meta-llama/Llama-2-7b-hf)        | 1.1 GB | [[百度]](https://pan.baidu.com/s/1bmgqdyRh9E3a2uqOGyNqiQ?pwd=7kvq) [[Google]](https://drive.google.com/file/d/1njJGSU_PRbzjYRNw5RSbC5-4fBOXTVY3/view?usp=share_link) [[🤗HF]](https://huggingface.co/hfl/chinese-llama-2-lora-7b) |
+| Chinese-Alpaca-2-LoRA-13B | 指令模型 | [Llama-2-13B-hf](https://huggingface.co/meta-llama/Llama-2-13b-hf) | 1.5 GB | [[百度]](https://pan.baidu.com/s/1Y5giIXOUUzI4Na6JOcviVA?pwd=tc2j) [[Google]](https://drive.google.com/file/d/1z2FIInsYJBTXipgztc-Mv7kkeqscx442/view?usp=share_link) [[🤗HF]](https://huggingface.co/hfl/chinese-alpaca-2-lora-13b) |
+| Chinese-Alpaca-2-LoRA-7B | 指令模型 | [Llama-2-7B-hf](https://huggingface.co/meta-llama/Llama-2-7b-hf) | 1.1 GB | [[百度]](https://pan.baidu.com/s/1g0olPxkB_rlZ9UUVfOnbcw?pwd=5e7w) [[Google]](https://drive.google.com/file/d/1MzJL-ZIzdJW7MIcAiYIDIDJ5dlMi8Kkk/view?usp=share_link) [[🤗HF]](https://huggingface.co/hfl/chinese-alpaca-2-lora-7b) |
 
 以下是长上下文版模型，**推荐以长文本为主的下游任务使用**，否则建议使用上述标准版。
 
 | 模型名称                  |   类型   |                   合并所需基模型                   | 大小 |                    LoRA下载地址                    |
 | :------------------------ | :------: | :--------------------------------------------------------: | :----------------: | :----------------------------------------------------------: |
-| Chinese-LLaMA-2-LoRA-13B-16K | 基座模型 | [Llama-2-13B-hf](https://huggingface.co/meta-llama/Llama-2-13b-hf) | 1.5 GB | [[百度]](https://pan.baidu.com/s/1VrfOJmhDnXxrXcdnfX00fA?pwd=4t2j) [[Google]](https://drive.google.com/file/d/1mSpigmHcN9YX1spa4QN3IPtx43Vfs55H/view?usp=share_link) [[🤗HF]](https://huggingface.co/ziqingyang/chinese-llama-2-lora-13b-16k) |
-| Chinese-LLaMA-2-LoRA-7B-16K | 基座模型 |        [Llama-2-7B-hf](https://huggingface.co/meta-llama/Llama-2-7b-hf)        | 1.1 GB | [[百度]](https://pan.baidu.com/s/14Jnm7QmcDx3XsK_NHZz6Uw?pwd=5b7i) [[Google]](https://drive.google.com/file/d/1yUdyQuBMAmxmUEAvGiKbjKuxTYPPI-or/view?usp=sharing) [[🤗HF]](https://huggingface.co/ziqingyang/chinese-llama-2-lora-7b-16k) |
-| Chinese-Alpaca-2-LoRA-13B-16K 🆕 | 指令模型 | [Llama-2-13B-hf](https://huggingface.co/meta-llama/Llama-2-13b-hf) | 1.5 GB | [[百度]](https://pan.baidu.com/s/1g42_X7Z0QWDyrrDqv2jifQ?pwd=bq7n) [[Google]](https://drive.google.com/file/d/1ppGNyMWnuLDcClXN7DBTbKxVehsn3Gd2/view?usp=share_link) [[🤗HF]](https://huggingface.co/ziqingyang/chinese-alpaca-2-lora-13b-16k) |
-| Chinese-Alpaca-2-LoRA-7B-16K 🆕 | 指令模型 | [Llama-2-7B-hf](https://huggingface.co/meta-llama/Llama-2-7b-hf) | 1.1 GB | [[百度]](https://pan.baidu.com/s/1E7GEZ6stp8EavhkhR06FwA?pwd=ewwy) [[Google]](https://drive.google.com/file/d/1GTgDNfMdcQhHEAfMPaP-EOEk_fwDvNEK/view?usp=share_link) [[🤗HF]](https://huggingface.co/ziqingyang/chinese-alpaca-2-lora-7b-16k) |
+| Chinese-LLaMA-2-LoRA-13B-16K | 基座模型 | [Llama-2-13B-hf](https://huggingface.co/meta-llama/Llama-2-13b-hf) | 1.5 GB | [[百度]](https://pan.baidu.com/s/1VrfOJmhDnXxrXcdnfX00fA?pwd=4t2j) [[Google]](https://drive.google.com/file/d/1mSpigmHcN9YX1spa4QN3IPtx43Vfs55H/view?usp=share_link) [[🤗HF]](https://huggingface.co/hfl/chinese-llama-2-lora-13b-16k) |
+| Chinese-LLaMA-2-LoRA-7B-16K | 基座模型 |        [Llama-2-7B-hf](https://huggingface.co/meta-llama/Llama-2-7b-hf)        | 1.1 GB | [[百度]](https://pan.baidu.com/s/14Jnm7QmcDx3XsK_NHZz6Uw?pwd=5b7i) [[Google]](https://drive.google.com/file/d/1yUdyQuBMAmxmUEAvGiKbjKuxTYPPI-or/view?usp=sharing) [[🤗HF]](https://huggingface.co/hfl/chinese-llama-2-lora-7b-16k) |
+| Chinese-Alpaca-2-LoRA-13B-16K 🆕 | 指令模型 | [Llama-2-13B-hf](https://huggingface.co/meta-llama/Llama-2-13b-hf) | 1.5 GB | [[百度]](https://pan.baidu.com/s/1g42_X7Z0QWDyrrDqv2jifQ?pwd=bq7n) [[Google]](https://drive.google.com/file/d/1ppGNyMWnuLDcClXN7DBTbKxVehsn3Gd2/view?usp=share_link) [[🤗HF]](https://huggingface.co/hfl/chinese-alpaca-2-lora-13b-16k) |
+| Chinese-Alpaca-2-LoRA-7B-16K 🆕 | 指令模型 | [Llama-2-7B-hf](https://huggingface.co/meta-llama/Llama-2-7b-hf) | 1.1 GB | [[百度]](https://pan.baidu.com/s/1E7GEZ6stp8EavhkhR06FwA?pwd=ewwy) [[Google]](https://drive.google.com/file/d/1GTgDNfMdcQhHEAfMPaP-EOEk_fwDvNEK/view?usp=share_link) [[🤗HF]](https://huggingface.co/hfl/chinese-alpaca-2-lora-7b-16k) |
 
 
 > [!IMPORTANT] 
@@ -172,15 +177,15 @@
 
 本项目中的相关模型主要支持以下量化、推理和部署方式，具体内容请参考对应教程。
 
-| 工具                                                         | 特点                         | CPU  | GPU  | 量化 | GUI  | API  | vLLM<sup>§</sup> |                             16K<sup>‡</sup>                             |                             教程                             |
-| :----------------------------------------------------------- | ---------------------------- | :--: | :--: | :--: | :--: | :--: | :--: | :--: | :--: |
-| [**llama.cpp**](https://github.com/ggerganov/llama.cpp)      | 丰富的量化选项和高效本地推理 |  ✅   |  ✅   |  ✅   |  ❌   |  ✅   |  ❌   | ✅ | [link](https://github.com/ymcui/Chinese-LLaMA-Alpaca-2/wiki/llamacpp_zh) |
-| [**🤗Transformers**](https://github.com/huggingface/transformers) | 原生transformers推理接口     |  ✅   |  ✅   |  ✅   |  ✅   |  ❌   |  ✅  | ✅ | [link](https://github.com/ymcui/Chinese-LLaMA-Alpaca-2/wiki/inference_with_transformers_zh) |
-| [**Colab Demo**](https://colab.research.google.com/drive/1yu0eZ3a66by8Zqm883LLtRQrguBAb9MR?usp=sharing) | 在Colab中启动交互界面 | ✅ | ✅ | ✅ | ✅ | ❌ | ✅ | ✅ | [link](https://colab.research.google.com/drive/1yu0eZ3a66by8Zqm883LLtRQrguBAb9MR?usp=sharing) |
-| [**仿OpenAI API调用**](https://platform.openai.com/docs/api-reference) | 仿OpenAI API接口的服务器Demo |  ✅   |  ✅   |  ✅   |  ❌   |  ✅   |  ✅  | ✅ | [link](https://github.com/ymcui/Chinese-LLaMA-Alpaca-2/wiki/api_calls_zh) |
-| [**text-generation-webui**](https://github.com/oobabooga/text-generation-webui) | 前端Web UI界面的部署方式 |  ✅   |  ✅   |  ✅   |  ✅   |  ✅<sup>†</sup>  | ❌  | ✅ | [link](https://github.com/ymcui/Chinese-LLaMA-Alpaca-2/wiki/text-generation-webui_zh) |
-| [**LangChain**](https://github.com/hwchase17/langchain) | 适合二次开发的大模型应用开源框架 |  ✅<sup>†</sup>  |  ✅   |  ✅<sup>†</sup>   |  ❌   |  ❌   | ❌  | ✅ | [link](https://github.com/ymcui/Chinese-LLaMA-Alpaca-2/wiki/langchain_zh) |
-| [**privateGPT**](https://github.com/imartinez/privateGPT) | 基于LangChain的多文档本地问答框架 | ✅ | ✅ | ✅ | ❌ | ❌ | ❌ | ✅ | [link](https://github.com/ymcui/Chinese-LLaMA-Alpaca-2/wiki/privategpt_zh) |
+| 工具                                                         | 特点                         | CPU  | GPU  | 量化 | GUI  | API  | vLLM<sup>§</sup> |                             16K<sup>‡</sup>                             | 投机采样 |                      教程                             |
+| :----------------------------------------------------------- | ---------------------------- | :--: | :--: | :--: | :--: | :--: | :--: | :--: | :--: | :--: |
+| [**llama.cpp**](https://github.com/ggerganov/llama.cpp)      | 丰富的量化选项和高效本地推理 |  ✅   |  ✅   |  ✅   |  ❌   |  ✅   |  ❌   | ✅ | ✅ | [link](https://github.com/ymcui/Chinese-LLaMA-Alpaca-2/wiki/llamacpp_zh) |
+| [**🤗Transformers**](https://github.com/huggingface/transformers) | 原生transformers推理接口     |  ✅   |  ✅   |  ✅   |  ✅   |  ❌   |  ✅  | ✅ | ✅ | [link](https://github.com/ymcui/Chinese-LLaMA-Alpaca-2/wiki/inference_with_transformers_zh) |
+| [**Colab Demo**](https://colab.research.google.com/drive/1yu0eZ3a66by8Zqm883LLtRQrguBAb9MR?usp=sharing) | 在Colab中启动交互界面 | ✅ | ✅ | ✅ | ✅ | ❌ | ✅ | ✅ | ✅ | [link](https://colab.research.google.com/drive/1yu0eZ3a66by8Zqm883LLtRQrguBAb9MR?usp=sharing) |
+| [**仿OpenAI API调用**](https://platform.openai.com/docs/api-reference) | 仿OpenAI API接口的服务器Demo |  ✅   |  ✅   |  ✅   |  ❌   |  ✅   |  ✅  | ✅ | ❌ | [link](https://github.com/ymcui/Chinese-LLaMA-Alpaca-2/wiki/api_calls_zh) |
+| [**text-generation-webui**](https://github.com/oobabooga/text-generation-webui) | 前端Web UI界面的部署方式 |  ✅   |  ✅   |  ✅   |  ✅   |  ✅<sup>†</sup>  | ❌  | ✅ | ❌ | [link](https://github.com/ymcui/Chinese-LLaMA-Alpaca-2/wiki/text-generation-webui_zh) |
+| [**LangChain**](https://github.com/hwchase17/langchain) | 适合二次开发的大模型应用开源框架 |  ✅<sup>†</sup>  |  ✅   |  ✅<sup>†</sup>   |  ❌   |  ❌   | ❌  | ✅ | ❌ | [link](https://github.com/ymcui/Chinese-LLaMA-Alpaca-2/wiki/langchain_zh) |
+| [**privateGPT**](https://github.com/imartinez/privateGPT) | 基于LangChain的多文档本地问答框架 | ✅ | ✅ | ✅ | ❌ | ❌ | ❌ | ✅ | ❌ | [link](https://github.com/ymcui/Chinese-LLaMA-Alpaca-2/wiki/privategpt_zh) |
 
 > [!NOTE]
 > <sup>†</sup> 工具支持该特性，但教程中未实现，详细说明请参考对应官方文档<br/>
@@ -273,6 +278,17 @@
 | CPU Speed |    117 |     42 |    51 |    39 |    44 |    43 |    48 |    51 |    50 |    54 |    65 |
 | GPU Speed |     53 |     19 |    21 |    17 |    18 |    20 |     x |     x |    25 |    26 |     x |
 
+### 投机采样加速效果评测
+
+通过投机采样方法并借助Chinese-LLaMA-2-1.3B和Chinese-Alpaca-2-1.3B，可以分别加速7B、13B的LLaMA和Alpaca模型的推理速度。以下是使用[投机采样脚本](scripts/inference/speculative_sample.py)在1*A40-48G上解码[生成效果评测](#生成效果评测)中的问题测得的平均速度（速度以ms/token计，模型均为fp16精度），供用户参考。详细说明见[📖GitHub Wiki](https://github.com/ymcui/Chinese-LLaMA-Alpaca-2/wiki/inference_with_transformers_zh#投机采样解码)。
+
+| 草稿模型 | 草稿模型速度 | 目标模型 | 目标模型速度 | 投机采样速度（加速比） |
+| :---------- |  :-----------------: | :----------- |  :-----------------: | :--------: |
+| Chinese-LLaMA-2-1.3B |  7.6 | Chinese-LLaMA-2-7B |  49.3 | 36.0（1.37x） |
+| Chinese-LLaMA-2-1.3B |  7.6 | Chinese-LLaMA-2-13B |  66.0 | 47.1（1.40x） |
+| Chinese-Alpaca-2-1.3B |  8.1 | Chinese-Alpaca-2-7B |  50.2 | 34.9（1.44x） |
+| Chinese-Alpaca-2-1.3B |  8.2 | Chinese-Alpaca-2-13B |  67.0 | 41.6（1.61x） |
+
 ## 训练与精调
 
 ### 预训练
@@ -305,7 +321,7 @@
 问题10：会出34B或者70B级别的模型吗？
 问题11：为什么长上下文版模型是16K，不是32K或者100K？
 问题12：为什么Alpaca模型会回复说自己是ChatGPT？
-问题13：为什么pt_lora_mdoel或者sft_lora_model下的adapter_model.bin只有几百k？
+问题13：为什么pt_lora_model或者sft_lora_model下的adapter_model.bin只有几百k？
 ```
 
 

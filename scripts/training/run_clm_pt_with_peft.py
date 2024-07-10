@@ -391,10 +391,11 @@ class MyTrainingArguments(TrainingArguments):
     modules_to_save : Optional[str] = field(default=None)
     debug_mode : Optional[bool] = field(default=False)
     peft_path : Optional[str] = field(default=None)
-    flash_attn : Optional[bool] = field(default=False)
+    use_flash_attention_2 : Optional[bool] = field(default=False)
     double_quant: Optional[bool] = field(default=True)
     quant_type: Optional[str] = field(default="nf4")
     load_in_kbits: Optional[int] = field(default=16)
+    full_finetuning : Optional[bool] = field(default=False)
 
 
 logger = logging.getLogger(__name__)
@@ -409,9 +410,6 @@ def main():
         model_args, data_args, training_args = parser.parse_json_file(json_file=os.path.abspath(sys.argv[1]))
     else:
         model_args, data_args, training_args = parser.parse_args_into_dataclasses()
-    if training_args.flash_attn:
-        from flash_attn_patch import replace_llama_attn_with_flash_attn
-        replace_llama_attn_with_flash_attn()
 
     # Sending telemetry. Tracking the example usage helps us better allocate resources to maintain them. The
     # information sent is the one passed as arguments along with your Python/PyTorch versions.
@@ -1013,6 +1011,7 @@ def main():
             load_in_4bit=load_in_4bit,
             load_in_8bit=load_in_8bit,
             quantization_config=quantization_config,
+            use_flash_attention_2=training_args.use_flash_attention_2
         )
     else:
         model = AutoModelForCausalLM.from_config(config)
@@ -1032,62 +1031,36 @@ def main():
         logger.info(f"Resize model vocab size to {tokenizer_vocab_size}")
         model.resize_token_embeddings(len(tokenizer))
 
-    if training_args.peft_path is not None:
-        # training_args.peft_path: None
-        logger.info("Peft from pre-trained model")
-        model = PeftModel.from_pretrained(model, training_args.peft_path, device_map=device_map)
-    else:
-        logger.info("Init new peft model")
-        target_modules = training_args.trainable.split(',')
-        # target_modules: ['q_proj', 'v_proj', 'k_proj', 'o_proj', 'gate_proj', 'down_proj', 'up_proj']
-        modules_to_save = training_args.modules_to_save
-        if modules_to_save is not None:
-            modules_to_save = modules_to_save.split(',')
-            # modules_to_save: ['embed_tokens', 'lm_head']
-        lora_rank = training_args.lora_rank
-        lora_dropout = training_args.lora_dropout
-        lora_alpha = training_args.lora_alpha
-        logger.info(f"target_modules: {target_modules}")
-        logger.info(f"lora_rank: {lora_rank}")
-        peft_config = LoraConfig(
-            task_type=TaskType.CAUSAL_LM,
-            # TaskType.CAUSAL_LM: <TaskType.CAUSAL_LM: 'CAUSAL_LM'>
-            target_modules=target_modules,
-            inference_mode=False,
-            r=lora_rank, lora_alpha=lora_alpha,
-            # lora_rank: 64, lora_alpha: 128.0
-            lora_dropout=lora_dropout,
-            # lora_dropout: 0.05
-            modules_to_save=modules_to_save)
-            # modules_to_save: ['embed_tokens', 'lm_head']
-
-        # class LoraConfig(PeftConfig):
-        #     """
-        #     This is the configuration class to store the configuration of a [`LoraModel`].
-        #
-        #     Args:
-        #         r (`int`): Lora attention dimension.
-        #         target_modules (`Union[List[str],str]`): The names of the modules to apply Lora to.
-        #         lora_alpha (`float`): The alpha parameter for Lora scaling.
-        #         lora_dropout (`float`): The dropout probability for Lora layers.
-        #         fan_in_fan_out (`bool`): Set this to True if the layer to replace stores weight like (fan_in, fan_out).
-        #         For example, gpt-2 uses `Conv1D` which stores weights like (fan_in, fan_out) and hence this should be set to `True`.:
-        #         bias (`str`): Bias type for Lora. Can be 'none', 'all' or 'lora_only'
-        #         modules_to_save (`List[str]`): List of modules apart from LoRA layers to be set as trainable
-        #             and saved in the final checkpoint.
-        #     """
-
-        model = get_peft_model(model, peft_config)
-        # def get_peft_model(model, peft_config):
-        #     """
-        #     Returns a Peft model object from a model and a config.
-        #
-        #     Args:
-        #         model ([`transformers.PreTrainedModel`]): Model to be wrapped.
-        #         peft_config ([`PeftConfig`]): Configuration object containing the parameters of the Peft model.
-        #     """
-
-    if training_args.gradient_checkpointing and \
+    if not training_args.full_finetuning:
+        if training_args.peft_path is not None:
+            logger.info("Peft from pre-trained model")
+            model = PeftModel.from_pretrained(model, training_args.peft_path, device_map=device_map)
+        else:
+            logger.info("Init new peft model")
+            target_modules = training_args.trainable.split(',')
+            modules_to_save = training_args.modules_to_save
+            if modules_to_save is not None:
+                modules_to_save = modules_to_save.split(',')
+            lora_rank = training_args.lora_rank
+            lora_dropout = training_args.lora_dropout
+            lora_alpha = training_args.lora_alpha
+            logger.info(f"target_modules: {target_modules}")
+            logger.info(f"lora_rank: {lora_rank}")
+            peft_config = LoraConfig(
+                task_type=TaskType.CAUSAL_LM,
+                target_modules=target_modules,
+                inference_mode=False,
+                r=lora_rank, lora_alpha=lora_alpha,
+                lora_dropout=lora_dropout,
+                modules_to_save=modules_to_save)
+            model = get_peft_model(model, peft_config)
+        model.print_trainable_parameters()
+        logger.info(f"model.modules_to_save: {model.modules_to_save}")
+        old_state_dict = model.state_dict
+        model.state_dict = (
+            lambda self, *_, **__: get_peft_model_state_dict(self, old_state_dict())
+        ).__get__(model, type(model))
+    if not training_args.full_finetuning and training_args.gradient_checkpointing and \
         (not model.modules_to_save or 'embed_tokens' not in model.modules_to_save):
         # enable requires_grad to avoid exception during backward pass when using gradient_checkpoint without tuning embed.
         if hasattr(model.base_model, "enable_input_require_grads"):
@@ -1096,37 +1069,6 @@ def main():
             def make_inputs_require_grad(_module, _input, _output):
                 _output.requires_grad_(True)
             model.base_model.get_input_embeddings().register_forward_hook(make_inputs_require_grad)
-
-    for name, module in model.named_modules():
-        if isinstance(module, LoraLayer):
-            if training_args.bf16:
-                module = module.to(torch.bfloat16)
-            if training_args.fp16:
-                module = module.to(torch.float16)
-        if 'norm' in name:
-            module = module.to(torch.float16)
-        if 'lm_head' in name or 'embed_tokens' in name:
-            if hasattr(module, 'weight'):
-                if training_args.bf16 and module.weight.dtype == torch.float32:
-                    module = module.to(torch.bfloat16)
-                if training_args.fp16 and module.weight.dtype == torch.float32:
-                    module = module.to(torch.float16)
-    model.print_trainable_parameters()
-    logger.info(f"model.modules_to_save: {model.modules_to_save}")
-    old_state_dict = model.state_dict
-    model.state_dict = (
-        lambda self, *_, **__: get_peft_model_state_dict(self, old_state_dict())
-    ).__get__(model, type(model))
-    # def get_peft_model_state_dict(model, state_dict=None, adapter_name="default"):
-    #     """
-    #     Get the state dict of the Peft model.
-    #
-    #     Args:
-    #         model ([`PeftModel`]): The Peft model. When using torch.nn.DistributedDataParallel, DeepSpeed or FSDP,
-    #         the model should be the underlying model/unwrapped model (i.e. model.module).
-    #         state_dict (`dict`, *optional*, defaults to `None`):
-    #             The state dict of the model. If not provided, the state dict of the model will be used.
-    #     """
 
     # Initialize our Trainer
     trainer = Trainer(
