@@ -1,4 +1,6 @@
-[**🇨🇳中文**](./README.md) | [**🌐English**](./README_EN.md) | [**📖文档/Docs**](https://github.com/ymcui/Chinese-LLaMA-Alpaca-2/wiki) | [**❓提问/Issues**](https://github.com/ymcui/Chinese-LLaMA-Alpaca-2/issues) | [**💬讨论/Discussions**](https://github.com/ymcui/Chinese-LLaMA-Alpaca-2/discussions) | [**⚔️竞技场/Arena**](http://chinese-alpaca-arena.ymcui.com/)
+# [Chinese-LLaMA-Alpaca-3](https://github.com/ymcui/Chinese-LLaMA-Alpaca-3) is launched!
+
+[**🇨🇳中文**](./README.md) | [**🌐English**](./README_EN.md) | [**📖文档/Docs**](https://github.com/ymcui/Chinese-LLaMA-Alpaca-2/wiki) | [**❓提问/Issues**](https://github.com/ymcui/Chinese-LLaMA-Alpaca-2/issues) | [**💬讨论/Discussions**](https://github.com/ymcui/Chinese-LLaMA-Alpaca-2/discussions) | [**⚔️竞技场/Arena**](http://llm-arena.ymcui.com/)
 
 <p align="center">
     <br>
@@ -13,7 +15,7 @@
 </p>
 
 
-This project is based on the Llama-2, released by Meta, and it is the second generation of the Chinese LLaMA & Alpaca LLM project. We open-source Chinese LLaMA-2 (foundation model) and Alpaca-2 (instruction-following model). These models have been expanded and optimized with Chinese vocabulary beyond the original Llama-2. We used large-scale Chinese data for incremental pre-training, which further improved the fundamental semantic understanding of the Chinese language, resulting in a significant performance improvement compared to the first-generation models. Standard version supports 4K context, and long context version supports 16K context. All models' context size can be further extended with NTK method (up to 24K+).
+This project is based on the Llama-2, released by Meta, and it is the second generation of the Chinese LLaMA & Alpaca LLM project. We open-source Chinese LLaMA-2 (foundation model) and Alpaca-2 (instruction-following model). These models have been expanded and optimized with Chinese vocabulary beyond the original Llama-2. We used large-scale Chinese data for incremental pre-training, which further improved the fundamental semantic understanding of the Chinese language, resulting in a significant performance improvement compared to the first-generation models. Standard version supports 4K context, and long context version supports 16K and 64K context. The RLHF models are fine-tuned for human preference alignment and have gained significant performance improvements in the representation of correct values compared to the standard version of the model.
 
 #### Main Contents
 
@@ -24,9 +26,12 @@ This project is based on the Llama-2, released by Meta, and it is the second gen
 
 #### Open-sourced Models
 
-- Base model: Chinese-LLaMA-2-1.3B, Chinese-LLaMA-2-7B, Chinese-LLaMA-2-13B
-- Instruction/chat model: Chinese-Alpaca-2-1.3B, Chinese-Alpaca-2-7B, Chinese-Alpaca-2-13B
-- Long context model: Chinese-LLaMA-2-7B-16K, Chinese-LLaMA-2-13B-16K, Chinese-Alpaca-2-7B-16K, Chinese-Alpaca-2-13B-16K
+- Base model: Chinese-LLaMA-2 (1.3B, 7B, 13B)
+- Instruction/chat model: Chinese-Alpaca-2 (1.3B, 7B, 13B)
+- Long context model (16K/64K): 
+  - Chinese-LLaMA-2-16K (7B, 13B) 、Chinese-Alpaca-2-16K (7B, 13B) 
+  - Chinese-LLaMA-2-64K (7B)、Chinese-Alpaca-2-64K (7B)
+- RLHF model：Chinese-Alpaca-2-RLHF (1.3B, 7B)
 
 ![](./pics/screencast.gif)
 
@@ -36,7 +41,15 @@ This project is based on the Llama-2, released by Meta, and it is the second gen
 
 ## News
 
-**[Sep 01, 2023] Release long context models: Chinese-Alpaca-2-7B-16K and Chinese-Alpaca-2-13B-16K, which can be directly used in downstream tasks, such as privateGPT. For details, see [📚 v3.1 release note](https://github.com/ymcui/Chinese-LLaMA-Alpaca-2/releases/tag/v3.1)**
+**[Apr 30, 2024] Chinese-LLaMA-Alpaca-3 project introduces Llama-3-Chinese-8B and Llama-3-Chinese-8B-Instruct, based on Meta's Llama-3. Check: https://github.com/ymcui/Chinese-LLaMA-Alpaca-3**
+
+[Mar 27, 2024] This project is now online at the SOTA! model platform of Synced, see: https://sota.jiqizhixin.com/project/chinese-llama-alpaca-2
+
+[Jan 23, 2024] Add new GGUF models (with imatrix), AWQ models, support YaRN under vLLM. For details, see[📚 v4.1 release note](https://github.com/ymcui/Chinese-LLaMA-Alpaca-2/releases/tag/v4.1)
+
+[Dec 29, 2023] Release long context models: Chiense-LLaMA-2-7B-64K and Chinese-Alpaca-2-7B-64K. We also release RLHF-tuned Chinese-Alpaca-2-RLHF (1.3B/7B). For details, see [📚 v4.0 release note](https://github.com/ymcui/Chinese-LLaMA-Alpaca-2/releases/tag/v4.0)
+
+[Sep 01, 2023] Release long context models: Chinese-Alpaca-2-7B-16K and Chinese-Alpaca-2-13B-16K, which can be directly used in downstream tasks, such as privateGPT. For details, see [📚 v3.1 release note](https://github.com/ymcui/Chinese-LLaMA-Alpaca-2/releases/tag/v3.1)
 
 [Aug 25, 2023] Release long context models: Chinese-LLaMA-2-7B-16K and Chinese-LLaMA-2-13B-16K, which support 16K context and can be further extended up to 24K+ using NTK. For details, see [📚 v3.0 release note](https://github.com/ymcui/Chinese-LLaMA-Alpaca-2/releases/tag/v3.0)
 
@@ -72,10 +85,11 @@ This project launches the Chinese LLaMA-2 and Alpaca-2 models based on Llama-2. 
 - [FlashAttention-2](https://github.com/Dao-AILab/flash-attention) is an implementation of efficient attention mechanisms, offering **faster speed and optimized memory usage** compared to its first-generation.
 - When the context length is longer, using efficient attention technology is essential to prevent explosive growth in memory usage.
 
-**🚄 Adaptive Context Extension based on PI and NTK**
+**🚄 Adaptive Context Extension based on PI and YaRN**
 
 - In the [first generation of the project](https://github.com/ymcui/Chinese-LLaMA-Alpaca), we implemented the [context extension based on NTK](https://github.com/ymcui/Chinese-LLaMA-Alpaca/pull/743), which can support longer contexts without further training the model.
 - We release long context models, using [PI](https://arxiv.org/abs/2306.15595) and NTK methods, supporting 16K context, and can be further extended up to 24K-32K
+- We further release long context models, using [YaRN](https://arxiv.org/abs/2309.00071), supporting 64K context
 - Based on the above, we further designed a **convenient adaptive empirical formula** that does not require manually setting corresponding hyperparameters for different context lengths.
 
 **🤖 Simplified Bilingual System Prompt**
@@ -83,6 +97,12 @@ This project launches the Chinese LLaMA-2 and Alpaca-2 models based on Llama-2. 
 - In the [first generation of the project](https://github.com/ymcui/Chinese-LLaMA-Alpaca), we use [Stanford Alpaca](https://github.com/tatsu-lab/stanford_alpaca) template for our Chinese Alpaca models
 - Through preliminary experiments, we found that the lengthy system prompt by Llama-2-Chat is not as effective as a simple one
 - We use a very simple system prompt while keeping the Llama-2-Chat template to better adapt to relevant ecosystems
+
+#### 👮 Human Preference Alignment
+
+- In the [first generation of the project](https://github.com/ymcui/Chinese-LLaMA-Alpaca), the Chinese Alpaca models completed pre-training and instruction fine-tuning, and gained basic conversational ability
+- Through reinforcement learning from human feedback (RLHF) experiments, we find that the ability of the model to convey correct values can be significantly improved
+- This project introduces the Alpaca-2-RLHF series of models, which are used in the same way as the SFT models
 
 The following figure depicts all open-sourced models for our projects (including the [first-gen project](https://github.com/ymcui/Chinese-LLaMA-Alpaca)).
 
@@ -103,10 +123,11 @@ Below is a basic comparison between the Chinese LLaMA-2 and Alpaca-2 models, as 
 | Trained on                    | [Original Llama-2](https://github.com/facebookresearch/llama) (non-chat) |                       Chinese LLaMA-2                        |
 | Training Corpus               |           Unlabeled general corpus (120G raw text)           |            Labeled instruction data (5M samples)             |
 | Vocabulary Size<sup>[1]</sup> |                            55,296                            |                            55,296                            |
-| Context Size<sup>[2]</sup>    |      Standard: 4K (12K-18K)<br/>Long ctx: 16K (24K-32K)      |      Standard: 4K (12K-18K)<br/>Long ctx: 16K (24K-32K)      |
+| Context Size<sup>[2]</sup>    | Standard: 4K (12K-18K)<br/>Long ctx(PI): 16K (24K-32K) <br/>Long ctx(YaRN): 64K | Standard: 4K (12K-18K)<br/>Long ctx(PI): 16K (24K-32K) <br/>Long ctx(YaRN): 64K |
 | Input Template                |                         Not required                         |          Requires specific templates<sup>[3]</sup>           |
 | Suitable Scenarios            | Text continuation: Given the context, the model generates the following text | Instruction understanding: Q&A, writing, chatting, interaction, etc. |
 | Unsuitable Scenarios          |       Instruction understanding, multi-turn chat, etc.       |                 Unrestricted text generation                 |
+| Preference Alignment          |                              No                              |                   RLHF version (1.3B, 7B)                    |
 
 > [!NOTE]
 > [1] *The vocabulary of the first and second generation models in this project are different, do not mix them. The vocabularies of the second generation LLaMA and Alpaca are the same.*</br> 
@@ -120,27 +141,43 @@ Below are the full models, which can be used directly afterwards, without additi
 
 | Model Name            |       Type        |  Size   |                        Download Link                         |                        GGUF                        |
 | :-------------------- | :---------------: | :-----: | :----------------------------------------------------------: | :----------------------------------------------------------: |
-| Chinese-LLaMA-2-13B | Base model | 24.7 GB | [[Baidu]](https://pan.baidu.com/s/1T3RqEUSmyg6ZuBwMhwSmoQ?pwd=e9qy) [[Google]](https://drive.google.com/drive/folders/1YNa5qJ0x59OEOI7tNODxea-1YvMPoH05?usp=share_link) [[🤗HF]](https://huggingface.co/hfl/chinese-llama-2-13b) | [[🤗HF]](https://huggingface.co/hfl/chinese-llama-2-13b-gguf) |
-| Chinese-LLaMA-2-7B | Base model | 12.9 GB | [[Baidu]](https://pan.baidu.com/s/1E5NI3nlQpx1j8z3eIzbIlg?pwd=n8k3) [[Google]](https://drive.google.com/drive/folders/18pp4I-mvQxRA7b8vF9gP-2cH_ocnXVKh?usp=share_link) [[🤗HF]](https://huggingface.co/hfl/chinese-llama-2-7b) | [[🤗HF]](https://huggingface.co/hfl/chinese-llama-2-7b-gguf) |
-| Chinese-LLaMA-2-1.3B | Base model | 2.4 GB | [[Baidu]](https://pan.baidu.com/s/1hEuOCllnJJ5NMEZJf8OkRw?pwd=nwjg) [[Google]](https://drive.google.com/drive/folders/1Sd3PA_gs6JctXtBg5HwmHXh9GX93riMP?usp=share_link) [[🤗HF]](https://huggingface.co/hfl/chinese-llama-2-1.3b) | [[🤗HF]](https://huggingface.co/hfl/chinese-llama-2-1.3b-gguf) |
-| Chinese-Alpaca-2-13B | Chat Model | 24.7 GB | [[Baidu]](https://pan.baidu.com/s/1MT_Zlap1OtdYMgoBNTS3dg?pwd=9xja) [[Google]](https://drive.google.com/drive/folders/1MTsKlzR61xmbTR4hBWzQas_MOpUZsogN?usp=share_link) [[🤗HF]](https://huggingface.co/hfl/chinese-alpaca-2-13b) | [[🤗HF]](https://huggingface.co/hfl/chinese-alpaca-2-13b-gguf) |
-| Chinese-Alpaca-2-7B | Chat Model | 12.9 GB | [[Baidu]](https://pan.baidu.com/s/1wxx-CdgbMupXVRBcaN4Slw?pwd=kpn9) [[Google]](https://drive.google.com/drive/folders/1JsJDVs7tE2y31PBNleBlDPsB7S0ZrY8d?usp=share_link) [[🤗HF]](https://huggingface.co/hfl/chinese-alpaca-2-7b) | [[🤗HF]](https://huggingface.co/hfl/chinese-alpaca-2-7b-gguf) |
-| Chinese-Alpaca-2-1.3B | Chat model | 2.4 GB | [[Baidu]](https://pan.baidu.com/s/1PD7Ng-ltOIdUGHNorveptA?pwd=ar1p) [[Google]](https://drive.google.com/drive/folders/1h6qOy-Unvqs1_CJ8uPp0eKC61Gbbn8n7?usp=share_link)[[🤗HF]](https://huggingface.co/hfl/chinese-alpaca-2-1.3b) | [[🤗HF]](https://huggingface.co/hfl/chinese-alpaca-2-1.3b-gguf) |
+| Chinese-LLaMA-2-13B | Base model | 24.7 GB | [[Baidu]](https://pan.baidu.com/s/1T3RqEUSmyg6ZuBwMhwSmoQ?pwd=e9qy) [[Google]](https://drive.google.com/drive/folders/1YNa5qJ0x59OEOI7tNODxea-1YvMPoH05?usp=share_link) <br/>[[🤗HF]](https://huggingface.co/hfl/chinese-llama-2-13b) [[🤖ModelScope]](https://modelscope.cn/models/ChineseAlpacaGroup/chinese-llama-2-13b) | [[🤗HF]](https://huggingface.co/hfl/chinese-llama-2-13b-gguf) |
+| Chinese-LLaMA-2-7B | Base model | 12.9 GB | [[Baidu]](https://pan.baidu.com/s/1E5NI3nlQpx1j8z3eIzbIlg?pwd=n8k3) [[Google]](https://drive.google.com/drive/folders/18pp4I-mvQxRA7b8vF9gP-2cH_ocnXVKh?usp=share_link) <br/>[[🤗HF]](https://huggingface.co/hfl/chinese-llama-2-7b) [[🤖ModelScope]](https://modelscope.cn/models/ChineseAlpacaGroup/chinese-llama-2-7b) | [[🤗HF]](https://huggingface.co/hfl/chinese-llama-2-7b-gguf) |
+| Chinese-LLaMA-2-1.3B | Base model | 2.4 GB | [[Baidu]](https://pan.baidu.com/s/1hEuOCllnJJ5NMEZJf8OkRw?pwd=nwjg) [[Google]](https://drive.google.com/drive/folders/1Sd3PA_gs6JctXtBg5HwmHXh9GX93riMP?usp=share_link) <br/>[[🤗HF]](https://huggingface.co/hfl/chinese-llama-2-1.3b) [[🤖ModelScope]](https://modelscope.cn/models/ChineseAlpacaGroup/chinese-llama-2-1.3b) | [[🤗HF]](https://huggingface.co/hfl/chinese-llama-2-1.3b-gguf) |
+| Chinese-Alpaca-2-13B | Chat Model | 24.7 GB | [[Baidu]](https://pan.baidu.com/s/1MT_Zlap1OtdYMgoBNTS3dg?pwd=9xja) [[Google]](https://drive.google.com/drive/folders/1MTsKlzR61xmbTR4hBWzQas_MOpUZsogN?usp=share_link) <br/>[[🤗HF]](https://huggingface.co/hfl/chinese-alpaca-2-13b) [[🤖ModelScope]](https://modelscope.cn/models/ChineseAlpacaGroup/chinese-alpaca-2-13b) | [[🤗HF]](https://huggingface.co/hfl/chinese-alpaca-2-13b-gguf) |
+| Chinese-Alpaca-2-7B | Chat Model | 12.9 GB | [[Baidu]](https://pan.baidu.com/s/1wxx-CdgbMupXVRBcaN4Slw?pwd=kpn9) [[Google]](https://drive.google.com/drive/folders/1JsJDVs7tE2y31PBNleBlDPsB7S0ZrY8d?usp=share_link) <br/>[[🤗HF]](https://huggingface.co/hfl/chinese-alpaca-2-7b) [[🤖ModelScope]](https://modelscope.cn/models/ChineseAlpacaGroup/chinese-alpaca-2-7b) | [[🤗HF]](https://huggingface.co/hfl/chinese-alpaca-2-7b-gguf) |
+| Chinese-Alpaca-2-1.3B | Chat model | 2.4 GB | [[Baidu]](https://pan.baidu.com/s/1PD7Ng-ltOIdUGHNorveptA?pwd=ar1p) [[Google]](https://drive.google.com/drive/folders/1h6qOy-Unvqs1_CJ8uPp0eKC61Gbbn8n7?usp=share_link) <br/>[[🤗HF]](https://huggingface.co/hfl/chinese-alpaca-2-1.3b) [[🤖ModelScope]](https://modelscope.cn/models/ChineseAlpacaGroup/chinese-alpaca-2-1.3b) | [[🤗HF]](https://huggingface.co/hfl/chinese-alpaca-2-1.3b-gguf) |
+
+#### Long Context Models
 
 The followings are long context models, which are recommended for long context tasks. 
 
-| Model Name                |    Type    |  Size   |                        Download Link                         |                        GGUF                        |
+| Model Name                |    Type    |  Size   |                        Download Link                         |                             GGUF                             |
 | :------------------------ | :--------: | :-----: | :----------------------------------------------------------: | :----------------------------------------------------------: |
-| Chinese-LLaMA-2-13B-16K | Base model | 24.7 GB | [[Baidu]](https://pan.baidu.com/s/1XWrh3Ru9x4UI4-XmocVT2w?pwd=f7ik) [[Google]](https://drive.google.com/drive/folders/1nii6lF0DgB1u81CnsE4cCK2jD5oq_OW-?usp=share_link) [[🤗HF]](https://huggingface.co/hfl/chinese-llama-2-13b-16k) | [[🤗HF]](https://huggingface.co/hfl/chinese-llama-2-13b-16k-gguf) |
-| Chinese-LLaMA-2-7B-16K  | Base model | 12.9 GB | [[Baidu]](https://pan.baidu.com/s/1ZH7T7KU_up61ugarSIXw2g?pwd=pquq) [[Google]](https://drive.google.com/drive/folders/1Zc6jI5bl3myQbQsY79dWJJ8mP_fyf3iF?usp=share_link) [[🤗HF]](https://huggingface.co/hfl/chinese-llama-2-7b-16k) | [[🤗HF]](https://huggingface.co/hfl/chinese-llama-2-7b-16k-gguf) |
-| Chinese-Alpaca-2-13B-16K 🆕 | Chat Model | 24.7 GB |                    [[Baidu]](https://pan.baidu.com/s/1gIzRM1eg-Xx1xV-3nXW27A?pwd=qi7c) [[Google]](https://drive.google.com/drive/folders/1mOkYQCvEqtGoZ9DaIpYFweSkSia2Q0vl?usp=share_link) [[🤗HF]](https://huggingface.co/hfl/chinese-alpaca-2-13b-16k)                    |                    [[🤗HF]](https://huggingface.co/hfl/chinese-alpaca-2-13b-16k-gguf)                    |
-| Chinese-Alpaca-2-7B-16K 🆕  | Chat Model | 12.9 GB | [[Baidu]](https://pan.baidu.com/s/1Qk3U1LyvMb1RSr5AbiatPw?pwd=bfis) [[Google]](https://drive.google.com/drive/folders/1KBRSd2xAhiVQmamfA5wpm5ovYFRKuMdr?usp=share_link) [[🤗HF]](https://huggingface.co/hfl/chinese-alpaca-2-7b-16k) | [[🤗HF]](https://huggingface.co/hfl/chinese-alpaca-2-7b-16k-gguf) |
+| Chinese-LLaMA-2-7B-64K 🆕  | Base model | 12.9 GB | [[Baidu]](https://pan.baidu.com/s/1ShDQ2FG2QUJrvfnxCn4hwQ?pwd=xe5k) [[Google]](https://drive.google.com/drive/folders/17l9xJx55L2YNpqt7NiLVQzOZ6fV4rzJ-?usp=share_link) <br/>[[🤗HF]](https://huggingface.co/hfl/chinese-llama-2-7b-64k) [[🤖ModelScope]](https://modelscope.cn/models/ChineseAlpacaGroup/chinese-llama-2-7b-64k) | [[🤗HF]](https://huggingface.co/hfl/chinese-llama-2-7b-64k-gguf) |
+| Chinese-Alpaca-2-7B-64K 🆕 | Chat model | 12.9 GB | [[Baidu]](https://pan.baidu.com/s/1KBAr9PCGvX2oQkYfCuLEjw?pwd=sgp6) [[Google]](https://drive.google.com/drive/folders/13G_d5xcDnhtaMOaulj1BFiZbVoVwJ-Cu?usp=share_link) <br/>[[🤗HF]](https://huggingface.co/hfl/chinese-alpaca-2-7b-64k) [[🤖ModelScope]](https://modelscope.cn/models/ChineseAlpacaGroup/chinese-alpaca-2-7b-64k) | [[🤗HF]](https://huggingface.co/hfl/chinese-alpaca-2-7b-64k-gguf) |
+| Chinese-LLaMA-2-13B-16K   | Base model | 24.7 GB | [[Baidu]](https://pan.baidu.com/s/1XWrh3Ru9x4UI4-XmocVT2w?pwd=f7ik) [[Google]](https://drive.google.com/drive/folders/1nii6lF0DgB1u81CnsE4cCK2jD5oq_OW-?usp=share_link) <br/>[[🤗HF]](https://huggingface.co/hfl/chinese-llama-2-13b-16k) [[🤖ModelScope]](https://modelscope.cn/models/ChineseAlpacaGroup/chinese-llama-2-13b-16k) | [[🤗HF]](https://huggingface.co/hfl/chinese-llama-2-13b-16k-gguf) |
+| Chinese-LLaMA-2-7B-16K    | Base model | 12.9 GB | [[Baidu]](https://pan.baidu.com/s/1ZH7T7KU_up61ugarSIXw2g?pwd=pquq) [[Google]](https://drive.google.com/drive/folders/1Zc6jI5bl3myQbQsY79dWJJ8mP_fyf3iF?usp=share_link) <br/>[[🤗HF]](https://huggingface.co/hfl/chinese-llama-2-7b-16k) [[🤖ModelScope]](https://modelscope.cn/models/ChineseAlpacaGroup/chinese-llama-2-7b-16k) | [[🤗HF]](https://huggingface.co/hfl/chinese-llama-2-7b-16k-gguf) |
+| Chinese-Alpaca-2-13B-16K  | Chat model | 24.7 GB | [[Baidu]](https://pan.baidu.com/s/1gIzRM1eg-Xx1xV-3nXW27A?pwd=qi7c) [[Google]](https://drive.google.com/drive/folders/1mOkYQCvEqtGoZ9DaIpYFweSkSia2Q0vl?usp=share_link) <br/>[[🤗HF]](https://huggingface.co/hfl/chinese-alpaca-2-13b-16k) [[🤖ModelScope]](https://modelscope.cn/models/ChineseAlpacaGroup/chinese-alpaca-2-13b-16k) | [[🤗HF]](https://huggingface.co/hfl/chinese-alpaca-2-13b-16k-gguf) |
+| Chinese-Alpaca-2-7B-16K   | Chat model | 12.9 GB | [[Baidu]](https://pan.baidu.com/s/1Qk3U1LyvMb1RSr5AbiatPw?pwd=bfis) [[Google]](https://drive.google.com/drive/folders/1KBRSd2xAhiVQmamfA5wpm5ovYFRKuMdr?usp=share_link) <br/>[[🤗HF]](https://huggingface.co/hfl/chinese-alpaca-2-7b-16k) [[🤖ModelScope]](https://modelscope.cn/models/ChineseAlpacaGroup/chinese-alpaca-2-7b-16k) | [[🤗HF]](https://huggingface.co/hfl/chinese-alpaca-2-7b-16k-gguf) |
 
+#### RLHF Models
 
-> [!IMPORTANT] 
->
-> 1. When using long context models, please follow our wiki to correctly use them. See [Wiki](https://github.com/ymcui/Chinese-LLaMA-Alpaca-2/wiki).
-> 2. GGUF is the model version for llama.cpp. Please check llama.cpp [Wiki](https://github.com/ymcui/Chinese-LLaMA-Alpaca-2/wiki/llamacpp_en)
+The following lists the RLHF models which exhibit a better value orientation than the standard version for issues involving law, ethics, etc.
+
+| Model Name                |    Type    |  Size   |                        Download Link                         |                        GGUF                        |
+| :------------------------ | :------: | :----------------------------------------------------------: | :----------------------------------------------------------: | :----------------------------------------------------------: |
+| Chinese-Alpaca-2-7B-RLHF 🆕 | Chat Model | 12.9 GB | [[Baidu]](https://pan.baidu.com/s/17GJ1y4rpPDuvWlvPaWgnqw?pwd=4feb) [[Google]](https://drive.google.com/drive/folders/1OHZVVtwM5McVEIZzyOYgGYLAxcZNVK4D?usp=share_link) <br/>[[🤗HF]](https://huggingface.co/hfl/chinese-alpaca-2-7b-rlhf) [[🤖ModelScope]](https://modelscope.cn/models/ChineseAlpacaGroup/chinese-alpaca-2-7b-rlhf) | [[🤗HF]](https://huggingface.co/hfl/chinese-alpaca-2-7b-rlhf-gguf) |
+| Chinese-Alpaca-2-1.3B-RLHF 🆕 | Chat Model | 2.4 GB | [[Baidu]](https://pan.baidu.com/s/1cLKJKieNitWbOggUXXaamw?pwd=cprp) [[Google]](https://drive.google.com/drive/folders/1zcvPUPPkq69SgqRu6YBurAZ9ptcPSZNx?usp=share_link) <br/>[[🤗HF]](https://huggingface.co/hfl/chinese-alpaca-2-1.3b-rlhf) [[🤖ModelScope]](https://modelscope.cn/models/ChineseAlpacaGroup/chinese-alpaca-2-1.3b-rlhf) | [[🤗HF]](https://huggingface.co/hfl/chinese-alpaca-2-1.3b-rlhf-gguf) |
+
+#### AWQ Models
+
+AWQ (Activation-aware Weight Quantization) is an efficient quantization method, which can be used with 🤗transformers, llama.cpp, etc.
+
+The pre-computed search results of our models are available: https://huggingface.co/hfl/chinese-llama-alpaca-2-awq
+
+- Generate AWQ-quantized models (AWQ official repo): https://github.com/mit-han-lab/llm-awq#usage
+- Using AWQ in llama.cpp: https://github.com/ggerganov/llama.cpp/tree/master/awq-py
 
 ### LoRA Model Download
 
@@ -148,19 +185,21 @@ Below are the LoRA models, **which cannot be used directly and must be merged wi
 
 | Model Name               |       Type        |                       Required Model for merging                       | Size  |                      LoRA Download Link                      |
 | :----------------------- | :---------------: | :----------------------------------------------------------: | :---: | :----------------------------------------------------------: |
-| Chinese-LLaMA-2-LoRA-13B | Base model | [Llama-2-13B-hf](https://huggingface.co/meta-llama/Llama-2-13b-hf) | 1.5 GB | [[Baidu]](https://pan.baidu.com/s/1PFKTBn54GjAjzWeQISKruw?pwd=we6s) [[Google]](https://drive.google.com/file/d/10Z_k9A9N9D_6RHrMTmbHQRCuI6s1iMb1/view?usp=share_link) [[🤗HF]](https://huggingface.co/hfl/chinese-llama-2-lora-13b) |
-| Chinese-LLaMA-2-LoRA-7B | Base model |        [Llama-2-7B-hf](https://huggingface.co/meta-llama/Llama-2-7b-hf)        | 1.1 GB | [[Baidu]](https://pan.baidu.com/s/1bmgqdyRh9E3a2uqOGyNqiQ?pwd=7kvq) [[Google]](https://drive.google.com/file/d/1njJGSU_PRbzjYRNw5RSbC5-4fBOXTVY3/view?usp=share_link) [[🤗HF]](https://huggingface.co/hfl/chinese-llama-2-lora-7b) |
-| Chinese-Alpaca-2-LoRA-13B | Chat Model | [Llama-2-13B-hf](https://huggingface.co/meta-llama/Llama-2-13b-hf) | 1.5 GB | [[Baidu]](https://pan.baidu.com/s/1Y5giIXOUUzI4Na6JOcviVA?pwd=tc2j) [[Google]](https://drive.google.com/file/d/1z2FIInsYJBTXipgztc-Mv7kkeqscx442/view?usp=share_link) [[🤗HF]](https://huggingface.co/hfl/chinese-alpaca-2-lora-13b) |
-| Chinese-Alpaca-2-LoRA-7B | Chat Model | [Llama-2-7B-hf](https://huggingface.co/meta-llama/Llama-2-7b-hf) | 1.1 GB | [[Baidu]](https://pan.baidu.com/s/1g0olPxkB_rlZ9UUVfOnbcw?pwd=5e7w) [[Google]](https://drive.google.com/file/d/1MzJL-ZIzdJW7MIcAiYIDIDJ5dlMi8Kkk/view?usp=share_link) [[🤗HF]](https://huggingface.co/hfl/chinese-alpaca-2-lora-7b) |
+| Chinese-LLaMA-2-LoRA-13B | Base model | [Llama-2-13B-hf](https://huggingface.co/meta-llama/Llama-2-13b-hf) | 1.5 GB | [[Baidu]](https://pan.baidu.com/s/1PFKTBn54GjAjzWeQISKruw?pwd=we6s) [[Google]](https://drive.google.com/file/d/10Z_k9A9N9D_6RHrMTmbHQRCuI6s1iMb1/view?usp=share_link) <br/>[[🤗HF]](https://huggingface.co/hfl/chinese-llama-2-lora-13b) [[🤖ModelScope]](https://modelscope.cn/models/ChineseAlpacaGroup/chinese-llama-2-lora-13b) |
+| Chinese-LLaMA-2-LoRA-7B | Base model |        [Llama-2-7B-hf](https://huggingface.co/meta-llama/Llama-2-7b-hf)        | 1.1 GB | [[Baidu]](https://pan.baidu.com/s/1bmgqdyRh9E3a2uqOGyNqiQ?pwd=7kvq) [[Google]](https://drive.google.com/file/d/1njJGSU_PRbzjYRNw5RSbC5-4fBOXTVY3/view?usp=share_link) <br/>[[🤗HF]](https://huggingface.co/hfl/chinese-llama-2-lora-7b) [[🤖ModelScope]](https://modelscope.cn/models/ChineseAlpacaGroup/chinese-llama-2-lora-7b) |
+| Chinese-Alpaca-2-LoRA-13B | Chat Model | [Llama-2-13B-hf](https://huggingface.co/meta-llama/Llama-2-13b-hf) | 1.5 GB | [[Baidu]](https://pan.baidu.com/s/1Y5giIXOUUzI4Na6JOcviVA?pwd=tc2j) [[Google]](https://drive.google.com/file/d/1z2FIInsYJBTXipgztc-Mv7kkeqscx442/view?usp=share_link) <br/>[[🤗HF]](https://huggingface.co/hfl/chinese-alpaca-2-lora-13b) [[🤖ModelScope]](https://modelscope.cn/models/ChineseAlpacaGroup/chinese-alpaca-2-lora-13b) |
+| Chinese-Alpaca-2-LoRA-7B | Chat Model | [Llama-2-7B-hf](https://huggingface.co/meta-llama/Llama-2-7b-hf) | 1.1 GB | [[Baidu]](https://pan.baidu.com/s/1g0olPxkB_rlZ9UUVfOnbcw?pwd=5e7w) [[Google]](https://drive.google.com/file/d/1MzJL-ZIzdJW7MIcAiYIDIDJ5dlMi8Kkk/view?usp=share_link) <br/>[[🤗HF]](https://huggingface.co/hfl/chinese-alpaca-2-lora-7b) [[🤖ModelScope]](https://modelscope.cn/models/ChineseAlpacaGroup/chinese-alpaca-2-lora-7b) |
 
 The followings are long context models, which are recommended for long context tasks. 
 
 | Model Name                      |    Type    |                  Required Model for merging                  |  Size  |                        Download Link                         |
 | :------------------------------ | :--------: | :----------------------------------------------------------: | :----: | :----------------------------------------------------------: |
-| Chinese-LLaMA-2-LoRA-13B-16K    | Base model | [Llama-2-13B-hf](https://huggingface.co/meta-llama/Llama-2-13b-hf) | 1.5 GB | [[Baidu]](https://pan.baidu.com/s/1VrfOJmhDnXxrXcdnfX00fA?pwd=4t2j) [[Google]](https://drive.google.com/file/d/1mSpigmHcN9YX1spa4QN3IPtx43Vfs55H/view?usp=share_link) [[🤗HF]](https://huggingface.co/hfl/chinese-llama-2-lora-13b-16k) |
-| Chinese-LLaMA-2-LoRA-7B-16K     | Base model | [Llama-2-7B-hf](https://huggingface.co/meta-llama/Llama-2-7b-hf) | 1.1 GB | [[Baidu]](https://pan.baidu.com/s/14Jnm7QmcDx3XsK_NHZz6Uw?pwd=5b7i) [[Google]](https://drive.google.com/file/d/1yUdyQuBMAmxmUEAvGiKbjKuxTYPPI-or/view?usp=sharing) [[🤗HF]](https://huggingface.co/hfl/chinese-llama-2-lora-7b-16k) |
-| Chinese-Alpaca-2-LoRA-13B-16K 🆕 | Chat Model | [Llama-2-13B-hf](https://huggingface.co/meta-llama/Llama-2-13b-hf) | 1.5 GB | [[Baidu]](https://pan.baidu.com/s/1g42_X7Z0QWDyrrDqv2jifQ?pwd=bq7n) [[Google]](https://drive.google.com/file/d/1ppGNyMWnuLDcClXN7DBTbKxVehsn3Gd2/view?usp=share_link) [[🤗HF]](https://huggingface.co/hfl/chinese-alpaca-2-lora-13b-16k) |
-| Chinese-Alpaca-2-LoRA-7B-16K 🆕  | Chat Model | [Llama-2-7B-hf](https://huggingface.co/meta-llama/Llama-2-7b-hf) | 1.1 GB | [[Baidu]](https://pan.baidu.com/s/1E7GEZ6stp8EavhkhR06FwA?pwd=ewwy) [[Google]](https://drive.google.com/file/d/1GTgDNfMdcQhHEAfMPaP-EOEk_fwDvNEK/view?usp=share_link) [[🤗HF]](https://huggingface.co/hfl/chinese-alpaca-2-lora-7b-16k) |
+| Chinese-LLaMA-2-LoRA-7B-64K 🆕 | Base model | [Llama-2-7B-hf](https://huggingface.co/meta-llama/Llama-2-7b-hf) | 1.1 GB | [[Baidu]](https://pan.baidu.com/s/1QjqKNM9Xez5g6koUrbII_w?pwd=94pk) [[Google]](https://drive.google.com/file/d/1-NuGqfduUZARRquFjGLpTmI5J-HlXYSR/view?usp=share_link) <br/>[[🤗HF]](https://huggingface.co/hfl/chinese-llama-2-lora-7b-64k) [[🤖ModelScope]](https://modelscope.cn/models/ChineseAlpacaGroup/chinese-llama-2-lora-7b-64k) |
+| Chinese-Alpaca-2-LoRA-7B-64K 🆕 | Chat model | [Llama-2-7B-hf](https://huggingface.co/meta-llama/Llama-2-7b-hf) | 1.1 GB | [[Baidu]](https://pan.baidu.com/s/1t6bPpMlJCrs9Ce7LXs09-w?pwd=37it) [[Google]](https://drive.google.com/file/d/1qESorx2PHtIsnj53JJ7XBsdOGHuLNjoI/view?usp=sharing) <br/>[[🤗HF]](https://huggingface.co/hfl/chinese-alpaca-2-lora-7b-64k) [[🤖ModelScope]](https://modelscope.cn/models/ChineseAlpacaGroup/chinese-alpaca-2-lora-7b-64k) |
+| Chinese-LLaMA-2-LoRA-13B-16K    | Base model | [Llama-2-13B-hf](https://huggingface.co/meta-llama/Llama-2-13b-hf) | 1.5 GB | [[Baidu]](https://pan.baidu.com/s/1VrfOJmhDnXxrXcdnfX00fA?pwd=4t2j) [[Google]](https://drive.google.com/file/d/1mSpigmHcN9YX1spa4QN3IPtx43Vfs55H/view?usp=share_link) <br/>[[🤗HF]](https://huggingface.co/hfl/chinese-llama-2-lora-13b-16k) [[🤖ModelScope]](https://modelscope.cn/models/ChineseAlpacaGroup/chinese-llama-2-lora-13b-16k) |
+| Chinese-LLaMA-2-LoRA-7B-16K     | Base model | [Llama-2-7B-hf](https://huggingface.co/meta-llama/Llama-2-7b-hf) | 1.1 GB | [[Baidu]](https://pan.baidu.com/s/14Jnm7QmcDx3XsK_NHZz6Uw?pwd=5b7i) [[Google]](https://drive.google.com/file/d/1yUdyQuBMAmxmUEAvGiKbjKuxTYPPI-or/view?usp=sharing) <br/>[[🤗HF]](https://huggingface.co/hfl/chinese-llama-2-lora-7b-16k) [[🤖ModelScope]](https://modelscope.cn/models/ChineseAlpacaGroup/chinese-llama-2-lora-7b-16k) |
+| Chinese-Alpaca-2-LoRA-13B-16K | Chat Model | [Llama-2-13B-hf](https://huggingface.co/meta-llama/Llama-2-13b-hf) | 1.5 GB | [[Baidu]](https://pan.baidu.com/s/1g42_X7Z0QWDyrrDqv2jifQ?pwd=bq7n) [[Google]](https://drive.google.com/file/d/1ppGNyMWnuLDcClXN7DBTbKxVehsn3Gd2/view?usp=share_link) <br/>[[🤗HF]](https://huggingface.co/hfl/chinese-alpaca-2-lora-13b-16k) [[🤖ModelScope]](https://modelscope.cn/models/ChineseAlpacaGroup/chinese-alpaca-2-lora-13b-16k) |
+| Chinese-Alpaca-2-LoRA-7B-16K  | Chat Model | [Llama-2-7B-hf](https://huggingface.co/meta-llama/Llama-2-7b-hf) | 1.1 GB | [[Baidu]](https://pan.baidu.com/s/1E7GEZ6stp8EavhkhR06FwA?pwd=ewwy) [[Google]](https://drive.google.com/file/d/1GTgDNfMdcQhHEAfMPaP-EOEk_fwDvNEK/view?usp=share_link) <br/>[[🤗HF]](https://huggingface.co/hfl/chinese-alpaca-2-lora-7b-16k) [[🤖ModelScope]](https://modelscope.cn/models/ChineseAlpacaGroup/chinese-alpaca-2-lora-7b-16k) |
 
 > [!IMPORTANT] 
 > As the LoRA models cannot be used separately, they must be merged with the original Llama-2 to form a complete model for model inference, quantization, or further training. Please choose one of the following methods to merge these models.
@@ -172,20 +211,20 @@ The followings are long context models, which are recommended for long context t
 
 The models in this project mainly support the following quantization, inference, and deployment methods.
 
-| Tool                                                         | Features                                                | CPU  | GPU  | Quant | GUI  | API  | vLLM<sup>§</sup> | 16K<sup>‡</sup> | Speculative  Sampling |                           Tutorial                           |
-| :----------------------------------------------------------- | ------------------------------------------------------- | :--: | :--: | :---: | :--: | :--: | :--: | :----------------------------------------------------------: | :----------------------------------------------------------: | ------------------------------------------------------------ |
-| [**llama.cpp**](https://github.com/ggerganov/llama.cpp)      | Rich quantization options and efficient local inference |  ✅   |  ✅   |   ✅   |  ❌   |  ✅   |  ❌   |  ✅  | ✅ | [link](https://github.com/ymcui/Chinese-LLaMA-Alpaca-2/wiki/llamacpp_en) |
-| [**🤗Transformers**](https://github.com/huggingface/transformers) | Native transformers inference interface                 |  ✅   |  ✅   |   ✅   |  ✅   |  ❌   |  ✅  |  ✅  | ✅ | [link](https://github.com/ymcui/Chinese-LLaMA-Alpaca-2/wiki/inference_with_transformers_en) |
-| [**Colab Demo**](https://colab.research.google.com/drive/1yu0eZ3a66by8Zqm883LLtRQrguBAb9MR?usp=sharing) | Running a Gradio web demo in Colab | ✅ | ✅ | ✅ | ✅ | ❌ | ✅ | ✅ | ✅ | [link](https://colab.research.google.com/drive/1yu0eZ3a66by8Zqm883LLtRQrguBAb9MR?usp=sharing) |
-| [**OpenAI API Calls**](https://platform.openai.com/docs/api-reference) | A server that implements OpenAI API |  ✅   |  ✅   |  ✅   |  ❌   |  ✅   |  ✅  |  ✅  | ❌ | [link](https://github.com/ymcui/Chinese-LLaMA-Alpaca-2/wiki/api_calls_en) |
-| [**text-generation-webui**](https://github.com/oobabooga/text-generation-webui) | A tool for deploying model as a web UI |  ✅   |  ✅   |  ✅   |  ✅   | ✅<sup>†</sup> | ❌  | ✅ | ❌ | [link](https://github.com/ymcui/Chinese-LLaMA-Alpaca-2/wiki/text-generation-webui_en) |
-| [**LangChain**](https://github.com/hwchase17/langchain) | LLM application development framework, suitable for secondary development |  ✅<sup>†</sup>  |  ✅   |  ✅<sup>†</sup>   |  ❌   |  ❌   | ❌  | ✅ | ❌ | [link](https://github.com/ymcui/Chinese-LLaMA-Alpaca-2/wiki/langchain_en) |
-| [**privateGPT**](https://github.com/imartinez/privateGPT) | LangChain-based multi-document QA framework | ✅ | ✅ | ✅ | ❌ | ❌ | ❌ | ✅ | ❌ | [link](https://github.com/ymcui/Chinese-LLaMA-Alpaca-2/wiki/privategpt_en) |
+| Tool                                                         | Features                                                | CPU  | GPU  | Quant | GUI  | API  | vLLM<sup>§</sup> | 16K<sup>‡</sup> | 64K<sup>‡</sup> |Speculative  Sampling |                           Tutorial                           |
+| :----------------------------------------------------------- | ------------------------------------------------------- | :--: | :--: | :---: | :--: | :--:| :--: | :--: | :----------------------------------------------------------: | :----------------------------------------------------------: | ------------------------------------------------------------ |
+| [**llama.cpp**](https://github.com/ggerganov/llama.cpp)      | Rich quantization options and efficient local inference |  ✅   |  ✅   |   ✅   |  ❌   |  ✅   |  ❌   |  ✅  |✅  | ✅ | [link](https://github.com/ymcui/Chinese-LLaMA-Alpaca-2/wiki/llamacpp_en) |
+| [**🤗Transformers**](https://github.com/huggingface/transformers) | Native transformers inference interface                 |  ✅   |  ✅   |   ✅   |  ✅   |  ❌   |  ✅  |  ✅  |✅  | ✅ | [link](https://github.com/ymcui/Chinese-LLaMA-Alpaca-2/wiki/inference_with_transformers_en) |
+| [**Colab Demo**](https://colab.research.google.com/drive/1yu0eZ3a66by8Zqm883LLtRQrguBAb9MR?usp=sharing) | Running a Gradio web demo in Colab | ✅ | ✅ | ✅ | ✅ | ❌ | ✅ | ✅ | ✅  |✅ | [link](https://colab.research.google.com/drive/1yu0eZ3a66by8Zqm883LLtRQrguBAb9MR?usp=sharing) |
+| [**OpenAI API Calls**](https://platform.openai.com/docs/api-reference) | A server that implements OpenAI API |  ✅   |  ✅   |  ✅   |  ❌   |  ✅   |  ✅  |  ✅  |✅  | ❌ | [link](https://github.com/ymcui/Chinese-LLaMA-Alpaca-2/wiki/api_calls_en) |
+| [**text-generation-webui**](https://github.com/oobabooga/text-generation-webui) | A tool for deploying model as a web UI |  ✅   |  ✅   |  ✅   |  ✅   | ✅<sup>†</sup> | ❌  | ✅ | ❌ |❌ | [link](https://github.com/ymcui/Chinese-LLaMA-Alpaca-2/wiki/text-generation-webui_en) |
+| [**LangChain**](https://github.com/hwchase17/langchain) | LLM application development framework, suitable for secondary development |  ✅<sup>†</sup>  |  ✅   |  ✅<sup>†</sup>   |  ❌   |  ❌   | ❌  | ✅ | ✅ |❌ | [link](https://github.com/ymcui/Chinese-LLaMA-Alpaca-2/wiki/langchain_en) |
+| [**privateGPT**](https://github.com/imartinez/privateGPT) | LangChain-based multi-document QA framework | ✅ | ✅ | ✅ | ❌ | ❌ | ❌ | ✅ | ❌ | ❌ | [link](https://github.com/ymcui/Chinese-LLaMA-Alpaca-2/wiki/privategpt_en) |
 
 > [!NOTE]
 > <sup>†</sup>: Supported by this tool, but not implemented in the tutorial. Please refer to the official documentation for details. <br/>
-> <sup>‡</sup>: Support 16K long context or not (requires customized RoPE support)</br>
-> <sup>§</sup>: vLLM backend does not support our 16K long context models. </br>
+> <sup>‡</sup>: Support long context or not (requires customized RoPE support)</br>
+> <sup>§</sup>: vLLM backend does not support our long context models. </br>
 
 ## System Performance
 
@@ -235,12 +274,14 @@ In order to intuitively understand the generation performance of the model, this
 | Chinese-LLaMA-Plus-13B  |    29.6 / 34.0    | Chinese-Alpaca-Plus-13B  |    40.6 / 39.9    |
 | Chinese-LLaMA-Plus-7B   |    25.4 / 26.3    | Chinese-Alpaca-Plus-7B   |    36.8 / 32.6    |
 
-### Long Context Model (16K) Evaluation
+### Long Context Model Evaluation
 
 [LongBench](https://github.com/THUDM/LongBench) is a benchmark for testing LLM's long context ability, consisting of 6 categories and 20 tasks. The average length of most of the task ranges from 5K to 15K. LongBench has 4.5K test samples in total. The followings are the results on Chinese subtasks. For LongBench inference code, please refer to this project's [📖GitHub Wiki](https://github.com/ymcui/Chinese-LLaMA-Alpaca-2/wiki/longbench_en)
 
 | Models                      | Single-doc QA | Multi-doc QA | Summarization | Few-shot Learning | Code Completion | Synthetic Task | Avg  |
 | --------------------------- | :-----------: | :----------: | :-----------: | :---------------: | :-------------: | :------------: | :--: |
+| **Chinese-Alpaca-2-7B-64K** | 44.7  |  28.1 | 14.4 |  39.0   |  44.6  |   5.0  | 29.3|
+| **Chinese-LLaMA-2-7B-64K** | 27.2  |  16.4 | 6.5 |  33.0   |  7.8  |   5.0  | 16.0|
 | **Chinese-Alpaca-2-13B-16K** |   47.9  |   26.7 | 13.0 |     22.3    |   46.6   |   21.5   | 29.7 |
 | Chinese-Alpaca-2-13B         |   38.4   |   20.0   | 11.9 |     17.3    |   46.5   |   8.0    | 23.7 |
 | **Chinese-Alpaca-2-7B-16K**  |   46.4  |   23.3  | 14.3 |     29.0     |   49.6   |   9.0    | 28.6 |
@@ -281,6 +322,26 @@ Using speculative sampling and leveraging Chinese-LLaMA-2-1.3B and Chinese-Alpac
 | Chinese-Alpaca-2-1.3B |        8.2        | Chinese-Alpaca-2-13B |        67.0        |       41.6（1.61x）        |
 
 
+### RLHF Models Evaluation
+
+#### Alignment
+
+To assess the degree of alignment of the RLHF models with human preferences, we constructed our own evaluation dataset, which covers a number of aspects that are the focus of human value preferences, such as morality, pornography, drugs, violence, and so on. The experimental results are presented in terms of the percentage of correct value embodiment (number of systematically correct value questions / total number of questions).
+
+| Alpaca Models            | Accuracy |  Alpaca Models            | Accuracy |
+| ------------------------ | :---------------: |------------------------ | :---------------: |
+| Chinese-Alpaca-2-1.3B |   79.3%    | Chinese-Alpaca-2-7B  |    88.3%    |
+| **Chinese-Alpaca-2-1.3B-RLHF** |    95.8%    | **Chinese-Alpaca-2-7B-RLHF** |    97.5%    |
+
+
+#### NLU Performance Evaluation： C-Eval & CMMLU
+| Alpaca Models            | C-Eval (0/few-shot) | CMMLU (0/few-shot) |
+| ------------------------ | :---------------: | :---------------: |
+| Chinese-Alpaca-2-1.3B |    23.8 / 26.8    |    24.8 / 25.1    |
+| Chinese-Alpaca-2-7B  |    42.1 / 41.0    |    40.0 / 41.8    |
+| **Chinese-Alpaca-2-1.3B-RLHF** |    23.6 / 27.1    |    24.9 / 25.0    |
+| **Chinese-Alpaca-2-7B-RLHF** |    40.6 / 41.2    |    39.5 / 41.0    |
+
 
 ## Training and Fine-tuning
 
@@ -288,6 +349,8 @@ Please refer to the corresponding Wiki for information on pre-training (Chinese 
 
 - **Pre-training**: The code is adapted from [run_clm.py](https://github.com/huggingface/transformers/blob/main/examples/pytorch/language-modeling/run_clm.py) in 🤗transformers. For usage, see the [Pre-training Script Wiki](https://github.com/ymcui/Chinese-LLaMA-Alpaca-2/wiki/pt_scripts_en).
 - **Instruction Fine-tuning**: The code refers to the relevant parts of dataset handling in the [Stanford Alpaca](https://github.com/tatsu-lab/stanford_alpaca) project. For usage, see the [Instruction Fine-tuning Script Wiki](https://github.com/ymcui/Chinese-LLaMA-Alpaca-2/wiki/sft_scripts_en).
+- **RLHF Fine-tuning**: Reinforcement learning from human feedback fine-tuning using preference data and PPO algorithm based on Chinese-Alpaca-2. For details, see the [📖Reward Modeling Wiki](https://github.com/ymcui/Chinese-LLaMA-Alpaca-2/wiki/rm_en)和[📖Reinforcement Learning Wiki](https://github.com/ymcui/Chinese-LLaMA-Alpaca-2/wiki/rl_en).
+
 
 ## FAQ
 
